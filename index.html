@@ -693,6 +693,98 @@
     }
     .bg-deco-text-1 { top: 15%; left: -3%; }
     .bg-deco-text-2 { bottom: 5%; right: -5%; }
+
+    /* ====== 顶部时间显示 ====== */
+    .topbar-meta {
+      display: flex; align-items: center; gap: 12px;
+    }
+    .topbar-time {
+      font-size: 0.82rem; font-variant-numeric: tabular-nums;
+      color: rgba(255,255,255,0.55); letter-spacing: 0.03em;
+    }
+    .topbar-date {
+      font-size: 0.72rem; color: rgba(255,255,255,0.35);
+    }
+
+    /* ====== 一言诗句区 ====== */
+    .hitokoto-card {
+      background: linear-gradient(135deg, rgba(119,82,254,0.3), rgba(56,239,125,0.2));
+      border-color: rgba(119,82,254,0.2);
+      padding: 14px 16px;
+      position: relative; overflow: hidden;
+    }
+    .hitokoto-card::before {
+      content: '\201C'; position: absolute;
+      font-size: 4rem; color: rgba(255,255,255,0.04);
+      top: -10px; left: 5px; line-height: 1;
+      font-family: Georgia, serif;
+    }
+    .hitokoto-text {
+      font-size: 0.82rem; color: rgba(255,255,255,0.8);
+      line-height: 1.7; font-style: italic;
+      margin-bottom: 4px; transition: opacity 0.2s ease;
+    }
+    .hitokoto-from {
+      font-size: 0.65rem; color: rgba(255,255,255,0.35);
+      text-align: right;
+    }
+    .hitokoto-refresh {
+      position: absolute; top: 10px; right: 10px;
+      font-size: 0.62rem; color: rgba(255,255,255,0.2);
+      cursor: pointer; transition: color 0.2s;
+    }
+    .hitokoto-refresh:hover { color: rgba(255,255,255,0.5); }
+
+    /* ====== 社交链接区 ====== */
+    .social-links {
+      display: flex; gap: 8px; flex-wrap: wrap;
+    }
+    .social-link {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 5px 12px; border-radius: 20px;
+      font-size: 0.72rem; color: rgba(255,255,255,0.6);
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.07);
+      transition: all 0.2s;
+    }
+    .social-link:hover { background: rgba(255,255,255,0.1); color: #fff; }
+
+    /* ====== 精致分隔线 ====== */
+    .section-divider {
+      display: flex; align-items: center; gap: 10px;
+      margin: 4px 0;
+    }
+    .section-divider::before, .section-divider::after {
+      content: ''; flex: 1; height: 1px;
+      background: rgba(255,255,255,0.06);
+    }
+    .section-divider span {
+      font-size: 0.6rem; color: rgba(255,255,255,0.15);
+      white-space: nowrap;
+    }
+
+    /* ====== 管理面板精致化 ====== */
+    .admin-panel { border-radius: 16px; }
+    .admin-tabs {
+      display: flex; gap: 4px; margin-bottom: 14px;
+      background: rgba(255,255,255,0.04);
+      border-radius: 10px; padding: 3px;
+    }
+    .admin-tab {
+      flex: 1; text-align: center; padding: 6px;
+      font-size: 0.72rem; color: rgba(255,255,255,0.4);
+      border-radius: 8px; cursor: pointer; transition: all 0.2s;
+    }
+    .admin-tab.active { background: rgba(255,255,255,0.08); color: #fff; }
+    .admin-content { display: none; }
+    .admin-content.active { display: block; }
+
+    /* 移动端顶栏时间 */
+    @media (max-width: 768px) {
+      .topbar-meta { flex-direction: column; align-items: flex-end; gap: 2px; }
+      .topbar-time { font-size: 0.7rem; }
+      .topbar-date { display: none; }
+    }
   </style>
 </head>
 <body>
@@ -722,6 +814,10 @@
   <!-- 顶部导航 -->
   <div class="topbar">
     <div class="topbar-title">致我们 <span>💌</span></div>
+    <div class="topbar-meta">
+      <div class="topbar-time" id="topbarTime"></div>
+      <div class="topbar-date" id="topbarDate"></div>
+    </div>
     <div class="topbar-greeting-mobile" id="greetingBarMobile"></div>
     <button class="menu-btn" id="menuBtn" onclick="toggleMobileNav()">☰</button>
   </div>
@@ -776,6 +872,14 @@
       </div>
 
       <!-- 管理入口（侧边栏底部） -->
+      <div class="sidebar-divider"></div>
+      <div class="section-divider"><span>✨</span></div>
+      <div class="social-links" style="margin-top:4px">
+        <a class="social-link" href="https://github.com/heart-sorry" target="_blank">🐙 GitHub</a>
+      </div>
+      <div style="font-size:0.6rem;color:rgba(255,255,255,0.15);text-align:center;margin-top:8px;letter-spacing:0.05em">
+        始于 2025 · 致我们
+      </div>
       <div class="admin-link">
         <button class="admin-link-btn" onclick="promptAdminPassword()">⚙️ 管理</button>
       </div>
@@ -811,6 +915,13 @@
           <span class="count-badge" id="friendShowcaseBadge">0</span>
         </div>
         <div class="friend-grid" id="friendGrid"></div>
+      </div>
+
+      <!-- 一言诗句 -->
+      <div class="card hitokoto-card" id="hitokotoCard">
+        <div class="hitokoto-text" id="hitokotoText">正在加载...</div>
+        <div class="hitokoto-from" id="hitokotoFrom"></div>
+        <div class="hitokoto-refresh" onclick="fetchHitokoto()" title="换一句">↻</div>
       </div>
 
       <!-- 留言板 -->
@@ -984,9 +1095,40 @@ function updateClock() {
   if (el) el.textContent = `${h}:${m}:${s}`;
   const day = document.getElementById('sidebarDay');
   if (day) day.textContent = `星期${d}`;
+  const tbTime = document.getElementById('topbarTime');
+  if (tbTime) tbTime.textContent = `${h}:${m}:${s}`;
+  const tbDate = document.getElementById('topbarDate');
+  if (tbDate) tbDate.textContent = `${now.getMonth()+1}/${now.getDate()} 星期${d}`;
 }
 updateClock();
 setInterval(updateClock, 1000);
+
+// ====== 一言诗句 ======
+const HITOKOTO_API = 'https://v1.hitokoto.cn?c=i&c=k&c=a&c=j&encode=json';
+let lastHitokoto = '';
+function fetchHitokoto() {
+  fetch(HITOKOTO_API)
+    .then(r => r.json())
+    .then(d => {
+      lastHitokoto = d.hitokoto;
+      const textEl = document.getElementById('hitokotoText');
+      const fromEl = document.getElementById('hitokotoFrom');
+      if (textEl) {
+        textEl.style.opacity = '0';
+        setTimeout(() => {
+          textEl.textContent = d.hitokoto;
+          textEl.style.opacity = '1';
+        }, 200);
+      }
+      if (fromEl) fromEl.textContent = d.from || '';
+    })
+    .catch(() => {
+      const textEl = document.getElementById('hitokotoText');
+      if (textEl) textEl.textContent = '每一步都是回忆。';
+    });
+}
+fetchHitokoto();
+setInterval(fetchHitokoto, 45000);
 
 // ====== 增强：粒子系统 ======
 (function spawnParticles() {
