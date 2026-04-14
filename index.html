@@ -703,6 +703,87 @@
     }
     .lb-close-btn:hover { background: rgba(255,255,255,0.1); }
 
+    /* ===================== PC 游戏弹窗 ===================== */
+    #pcGameModal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.75);
+      backdrop-filter: blur(8px);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+    }
+    #pcGameModal.show { display: flex; }
+    .pc-game-box {
+      background: linear-gradient(135deg, rgba(26,26,46,0.98), rgba(22,33,62,0.98));
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 20px;
+      padding: 20px;
+      width: 420px;
+      max-width: 95vw;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    }
+    .pc-game-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .pc-game-header h3 { margin: 0; color: #667eea; font-size: 1.1rem; }
+    .pc-game-close {
+      background: rgba(255,255,255,0.06);
+      border: none;
+      color: rgba(255,255,255,0.5);
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: all 0.2s;
+    }
+    .pc-game-close:hover { background: rgba(255,255,255,0.12); color: #fff; }
+    .pc-game-controls {
+      text-align: center;
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 10px;
+    }
+    .pc-game-controls kbd {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-family: inherit;
+      font-size: 0.7rem;
+    }
+    #pcGameCanvas {
+      width: 100%;
+      height: 160px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.06);
+      box-shadow: 0 0 20px rgba(102,126,234,0.2);
+      display: block;
+    }
+    .pc-game-footer {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .pc-game-btn {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: #fff;
+      border: none;
+      padding: 8px 20px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .pc-game-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 15px rgba(102,126,234,0.4); }
+    .pc-game-btn.secondary { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); }
+
     /* ===================== ==================== ===================== */
     /* =====================  移动端响应式 (≤768px)  ===================== */
     /* ===================== ==================== ===================== */
@@ -1049,6 +1130,13 @@
         <div class="q-desc">20道题测出你的MBTI</div>
       </div>
 
+      <!-- 恐龙跑酷游戏（侧边栏） -->
+      <div class="card game-card" onclick="openPCGame()" style="cursor:pointer;">
+        <div class="card-label">🦖 恐龙跑酷</div>
+        <div class="q-title">经典小游戏</div>
+        <div class="q-desc">点击开始挑战</div>
+      </div>
+
       <!-- 秘密暗号（侧边栏） -->
       <div class="card secret-card" onclick="toggleSecret()">
         💫 输入秘密暗号解锁惊喜
@@ -1271,6 +1359,25 @@
     <h3>🏆 恐龙跑酷排行榜</h3>
     <div id="leaderboardList"></div>
     <button class="lb-close-btn" onclick="closeLeaderboard()">关闭</button>
+  </div>
+</div>
+
+<!-- PC 游戏弹窗 -->
+<div id="pcGameModal">
+  <div class="pc-game-box">
+    <div class="pc-game-header">
+      <h3>🦖 恐龙跑酷</h3>
+      <button class="pc-game-close" onclick="closePCGame()">✕</button>
+    </div>
+    <div class="pc-game-controls">
+      <span>按 <kbd>空格</kbd> 或 <kbd>↑</kbd> 跳跃</span>
+      <span style="margin-left:12px">按 <kbd>↓</kbd> 趴下</span>
+    </div>
+    <canvas id="pcGameCanvas"></canvas>
+    <div class="pc-game-footer">
+      <button class="pc-game-btn" onclick="startPCGame()">开始游戏</button>
+      <button class="pc-game-btn secondary" onclick="showGameLeaderboard()">🏆 排行榜</button>
+    </div>
   </div>
 </div>
 
@@ -2418,6 +2525,67 @@ function escHtml(str) {
   const d = document.createElement('div');
   d.textContent = str;
   return d.innerHTML;
+}
+
+// ==================== PC 游戏弹窗 ====================
+function openPCGame() {
+  document.getElementById('pcGameModal').classList.add('show');
+  // 预设 canvas 尺寸
+  const canvas = document.getElementById('pcGameCanvas');
+  canvas.width = Math.min(380, window.innerWidth - 60);
+  canvas.height = 160;
+}
+
+function closePCGame() {
+  document.getElementById('pcGameModal').classList.remove('show');
+  // 停止游戏
+  if (gRunning) {
+    gRunning = false;
+    if (gameLoop) cancelAnimationFrame(gameLoop);
+  }
+  // 清理
+  const canvas = document.getElementById('pcGameCanvas');
+  if (canvas) canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+  document.onkeydown = null;
+  document.onkeyup = null;
+}
+
+function startPCGame() {
+  gCanvas = document.getElementById('pcGameCanvas');
+  if (!gCanvas) return;
+  gCtx = gCanvas.getContext('2d');
+  gCanvasW = gCanvas.width;
+  gCanvasH = gCanvas.height;
+  gGroundY = Math.round(gCanvasH * GROUND_Y_RATIO);
+
+  gDino = { x: 20, y: gGroundY - 44, w: 36, h: 44, vy: 0, jumping: false, ducking: false };
+  gObstacles = [];
+  gClouds = [];
+  gStars = [];
+  gScore = 0;
+  gSpeed = 5;
+  gFrame = 0;
+  gLastObstacle = 0;
+  gRunning = true;
+  gPendingScore = 0;
+
+  for (let i = 0; i < 6; i++) gStars.push({ x: Math.random() * gCanvasW, y: Math.random() * gCanvasH * 0.6, r: Math.random() * 1.5 + 0.5, a: Math.random() });
+
+  if (gameLoop) cancelAnimationFrame(gameLoop);
+  gameLoop = requestAnimationFrame(gameTick);
+
+  const jump = (e) => {
+    if (!gRunning) return;
+    if (e) e.preventDefault();
+    if (!gDino.jumping) { gDino.vy = -11; gDino.jumping = true; }
+  };
+  gCanvas.onclick = jump;
+  gCanvas.ontouchstart = jump;
+  document.onkeydown = (e) => {
+    if (e.code === 'Space' || e.key === ' ' || e.code === 'ArrowUp') { e.preventDefault(); jump(); }
+    if (e.code === 'ArrowDown') { gDino.ducking = true; }
+  };
+  document.onkeyup = (e) => { if (e.code === 'ArrowDown') gDino.ducking = false; };
 }
 </script>
 
