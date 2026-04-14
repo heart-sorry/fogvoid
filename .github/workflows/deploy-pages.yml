@@ -14,23 +14,8 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
-
-      - name: Inject Gist Token
-        run: |
-          if [ -z "$GIST_TOKEN" ]; then
-            echo "::warning::GIST_TOKEN secret is empty or not set"
-          else
-            echo "Injecting Gist Token..."
-            sed -i "s/const GIST_TOKEN = ''/const GIST_TOKEN = '$GIST_TOKEN'/" index.html
-            echo "✓ Token injected"
-          fi
-        env:
-          GIST_TOKEN: ${{ secrets.GIST_TOKEN }}
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
