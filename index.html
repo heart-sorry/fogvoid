@@ -418,16 +418,37 @@
       padding: 20px; backdrop-filter: blur(4px);
     }
     .modal-overlay.active { display: flex; }
+    .modal-overlay { align-items: center; justify-content: center; }
     .modal {
-      background: rgba(26,26,46,0.97); backdrop-filter: blur(20px);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 16px; padding: 24px 20px;
-      max-width: 340px; width: 100%; text-align: center;
+      background: rgba(20, 16, 40, 0.95);
+      backdrop-filter: blur(24px);
+      border: 1px solid rgba(240,147,251,0.15);
+      border-radius: 20px;
+      max-width: 380px; width: 90%;
+      padding: 28px 24px; text-align: center;
+      animation: modal-pop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      position: relative; overflow: hidden;
     }
-    .modal .m-avatar { font-size: 2.4rem; margin-bottom: 4px; }
-    .modal .m-name { font-size: 1.1rem; font-weight: 700; color: #fff; }
-    .modal .m-tag { font-size: 0.65rem; color: rgba(255,255,255,0.4); margin-bottom: 14px; }
-    .modal .m-text { font-size: 0.85rem; color: rgba(255,255,255,0.7); line-height: 1.7; text-align: left; }
+    .modal::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(240,147,251,0.7), transparent);
+    }
+    @keyframes modal-pop {
+      from { transform: scale(0.85) translateY(10px); opacity: 0; }
+      to { transform: scale(1) translateY(0); opacity: 1; }
+    }
+    .modal .m-avatar { font-size: 3rem; margin-bottom: 8px; display: block; }
+    .modal .m-name { font-size: 1.15rem; font-weight: 700; color: #fff; margin-bottom: 2px; }
+    .modal .m-tag { font-size: 0.65rem; color: rgba(240,147,251,0.6); margin-bottom: 14px; letter-spacing: 0.05em; }
+    .modal .m-text { font-size: 0.85rem; color: rgba(255,255,255,0.75); line-height: 1.8; text-align: left; }
+    .modal .m-days { font-size: 0.72rem; color: rgba(102,126,234,0.7); margin-bottom: 10px; }
+    .close-btn {
+      width: 100%; padding: 10px; margin-top: 16px;
+      background: rgba(240,147,251,0.12); border: 1px solid rgba(240,147,251,0.18);
+      border-radius: 10px; color: rgba(255,255,255,0.8); font-size: 0.82rem;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .close-btn:hover { background: rgba(240,147,251,0.25); color: #fff; border-color: rgba(240,147,251,0.3); }
     .close-btn {
       margin-top: 18px; padding: 10px 28px; border: none; border-radius: 25px;
       background: linear-gradient(135deg, rgba(102,126,234,0.6), rgba(118,75,162,0.6));
@@ -1029,6 +1050,7 @@
     <div class="m-avatar" id="m-avatar"></div>
     <div class="m-name" id="m-name"></div>
     <div class="m-tag" id="m-tag"></div>
+    <div class="m-days" id="m-days"></div>
     <div class="m-text" id="m-text"></div>
     <button class="close-btn" onclick="document.getElementById('modal').classList.remove('active')">收到</button>
   </div>
@@ -1403,10 +1425,13 @@ searchInput.addEventListener('keypress', (e) => {
 // ==================== 弹窗 ====================
 function openModal(i) {
   const f = friends[i];
-  document.getElementById('m-avatar').textContent = f.avatar;
-  document.getElementById('m-name').textContent = f.name;
-  document.getElementById('m-tag').textContent = f.tag + (f.meetDate ? ' · 认识'+getDays(f.meetDate)+'天' : '');
-  document.getElementById('m-text').textContent = f.message;
+  document.getElementById('m-avatar').textContent = f.avatar || '👤';
+  document.getElementById('m-name').textContent = f.name || '未命名';
+  document.getElementById('m-tag').textContent = f.tag || '';
+  if (document.getElementById('m-days')) {
+    document.getElementById('m-days').textContent = f.meetDate ? `相识 ${getDays(f.meetDate)} 天` : '';
+  }
+  document.getElementById('m-text').textContent = f.message || '暂无留言';
   document.getElementById('modal').classList.add('active');
 }
 function closeModal(e) { if (e.target.id === 'modal') document.getElementById('modal').classList.remove('active'); }
@@ -1654,7 +1679,7 @@ function renderFriendShowcase() {
   grid.innerHTML = friends.map((f, i) => {
     const days = getDays(f.meetDate);
     const dayStr = days > 0 ? `相识 ${days} 天` : '';
-    return `<div class="friend-grid-item card-3d" onclick="openModal(${i})">
+    return `<div class="friend-grid-item card-3d" data-i="${i}" onclick="openModal(this.getAttribute('data-i'))">
       <div class="card-3d-inner">
         <span class="fg-avatar">${f.avatar || '👤'}</span>
         <div class="fg-name">${f.name || '未命名'}</div>
