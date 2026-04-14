@@ -582,6 +582,127 @@
     /* 移动端内容面板 */
     .mobile-panel { display: none; }
 
+    /* ===================== 恐龙跑酷游戏 ===================== */
+    #mobileGameCanvas {
+      background: rgba(255,255,255,0.06) !important;
+      box-shadow: 0 0 20px rgba(102,126,234,0.3);
+    }
+
+    /* 游戏结束弹窗 */
+    #gameOverModal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.75);
+      backdrop-filter: blur(8px);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+    }
+    #gameOverModal.show { display: flex; }
+    .game-over-box {
+      background: linear-gradient(135deg, rgba(26,26,46,0.98), rgba(22,33,62,0.98));
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 20px;
+      padding: 32px 28px;
+      width: 300px;
+      max-width: 90vw;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+      animation: modalPop 0.3s ease;
+    }
+    @keyframes modalPop {
+      from { transform: scale(0.8); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    .game-over-box h3 { color: #f8a5c2; margin: 0 0 6px; font-size: 1.3rem; }
+    .game-over-score { font-size: 3rem; color: #fff; font-weight: 700; margin: 10px 0; text-shadow: 0 0 20px rgba(102,126,234,0.8); }
+    .game-over-score span { font-size: 0.9rem; color: rgba(255,255,255,0.4); font-weight: 400; }
+    .game-over-input {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.06);
+      color: #fff;
+      font-size: 0.9rem;
+      margin: 12px 0;
+      box-sizing: border-box;
+      outline: none;
+      text-align: center;
+    }
+    .game-over-input:focus { border-color: #667eea; }
+    .game-over-btn {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: #fff;
+      border: none;
+      padding: 10px 24px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      margin: 4px 6px;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .game-over-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 15px rgba(102,126,234,0.4); }
+    .game-over-btn.secondary { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); }
+
+    /* 排行榜 */
+    #leaderboardModal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.75);
+      backdrop-filter: blur(8px);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+    }
+    #leaderboardModal.show { display: flex; }
+    .leaderboard-box {
+      background: linear-gradient(135deg, rgba(26,26,46,0.98), rgba(22,33,62,0.98));
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 20px;
+      padding: 24px 20px;
+      width: 340px;
+      max-width: 92vw;
+      max-height: 80vh;
+      overflow-y: auto;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    }
+    .leaderboard-box h3 { color: #667eea; margin: 0 0 16px; font-size: 1.1rem; }
+    .leaderboard-item {
+      display: flex;
+      align-items: center;
+      padding: 8px 12px;
+      border-radius: 10px;
+      margin-bottom: 6px;
+      background: rgba(255,255,255,0.04);
+      font-size: 0.85rem;
+    }
+    .leaderboard-item.rank1 { background: rgba(255,215,0,0.12); border: 1px solid rgba(255,215,0,0.25); }
+    .leaderboard-item.rank2 { background: rgba(192,192,192,0.08); border: 1px solid rgba(192,192,192,0.2); }
+    .leaderboard-item.rank3 { background: rgba(205,127,50,0.08); border: 1px solid rgba(205,127,50,0.2); }
+    .leaderboard-rank { width: 28px; font-weight: 700; color: rgba(255,255,255,0.4); font-size: 0.9rem; }
+    .leaderboard-item.rank1 .leaderboard-rank { color: #ffd700; }
+    .leaderboard-item.rank2 .leaderboard-rank { color: #c0c0c0; }
+    .leaderboard-item.rank3 .leaderboard-rank { color: #cd7f32; }
+    .leaderboard-name { flex: 1; color: rgba(255,255,255,0.8); text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .leaderboard-score { color: #f8a5c2; font-weight: 700; margin-left: 8px; }
+    .leaderboard-date { font-size: 0.7rem; color: rgba(255,255,255,0.25); width: 70px; text-align: right; }
+    .leaderboard-empty { color: rgba(255,255,255,0.3); font-size: 0.85rem; padding: 20px; }
+    .lb-close-btn {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: rgba(255,255,255,0.6);
+      padding: 8px 20px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      margin-top: 12px;
+    }
+    .lb-close-btn:hover { background: rgba(255,255,255,0.1); }
+
     /* ===================== ==================== ===================== */
     /* =====================  移动端响应式 (≤768px)  ===================== */
     /* ===================== ==================== ===================== */
@@ -1072,8 +1193,19 @@
       </div>
     </div>
 
-    <div class="mobile-panel" id="mobileMine">
-      <!-- 移动端由留言板和搜索填充 -->
+    <div class="mobile-panel" id="mobileGame">
+      <div id="mobileGameContent" style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px;box-sizing:border-box;">
+        <div id="mobileGameIntro" style="text-align:center;">
+          <div style="font-size:3rem;margin-bottom:12px">🦖</div>
+          <div style="color:rgba(255,255,255,0.7);font-size:0.9rem;margin-bottom:16px">恐龙跑酷</div>
+          <div style="color:rgba(255,255,255,0.35);font-size:0.75rem;margin-bottom:20px">空格键 / 点击开始跳跃</div>
+          <button onclick="startMobileGame()" style="background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;padding:10px 28px;border-radius:20px;font-size:0.85rem;cursor:pointer;">开始游戏</button>
+          <div style="margin-top:20px">
+            <button onclick="showGameLeaderboard()" style="background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.5);border:1px solid rgba(255,255,255,0.1);padding:6px 16px;border-radius:12px;font-size:0.75rem;cursor:pointer;">🏆 排行榜</button>
+          </div>
+        </div>
+        <canvas id="mobileGameCanvas" style="display:none;border-radius:8px;max-width:100%;opacity:0.92;margin-top:10px;"></canvas>
+      </div>
     </div>
 
   </div><!-- end main-area -->
@@ -1090,8 +1222,8 @@
       <button class="bottom-nav-item" onclick="switchMobileTab('anniversary')" id="navAnniversary">
         <div class="nav-icon">🎄</div>纪念日
       </button>
-      <button class="bottom-nav-item" onclick="switchMobileTab('mine')" id="navMine">
-        <div class="nav-icon">💬</div>我的
+      <button class="bottom-nav-item" onclick="switchMobileTab('game')" id="navGame">
+        <div class="nav-icon">🦖</div>游戏
       </button>
     </div>
   </div>
@@ -1119,6 +1251,29 @@
   </div>
 </div>
 
+<!-- 游戏结束弹窗 -->
+<div id="gameOverModal">
+  <div class="game-over-box">
+    <h3>🏆 游戏结束</h3>
+    <div class="game-over-score" id="gameOverScore">0 <span>分</span></div>
+    <input class="game-over-input" id="gamePlayerName" placeholder="输入你的名字留榜" maxlength="12" />
+    <div>
+      <button class="game-over-btn" onclick="submitGameScore()">上榜</button>
+      <button class="game-over-btn secondary" onclick="closeGameOver()">关闭</button>
+    </div>
+    <div id="gameOverHint" style="font-size:0.72rem;color:rgba(255,255,255,0.25);margin-top:8px"></div>
+  </div>
+</div>
+
+<!-- 排行榜 -->
+<div id="leaderboardModal">
+  <div class="leaderboard-box">
+    <h3>🏆 恐龙跑酷排行榜</h3>
+    <div id="leaderboardList"></div>
+    <button class="lb-close-btn" onclick="closeLeaderboard()">关闭</button>
+  </div>
+</div>
+
 <!-- 弹窗提示 -->
 <div class="toast" id="toast"></div>
 
@@ -1126,6 +1281,7 @@
 // ==================== 数据 ====================
 let friends = [];
 let messages = [];
+let gameScores = []; // 恐龙跑酷游戏成绩
 const GIST_ID = 'cf38eea9cb4db23811ff60fdd6d6cec3';
 const GIST_API = 'https://api.github.com/gists/' + GIST_ID;
 const GIST_RAW = `https://gist.githubusercontent.com/heart-sorry/${GIST_ID}/raw/data.json`;
@@ -1133,6 +1289,12 @@ const GIST_TOKEN = '';
 const ADMIN_PASSWORD = '5201314';
 const ANNIVERSARY_DATE = '2025-12-25';
 const musicUrl = './music.mp3';
+
+// 游戏成绩本地存储
+function getGameScores() {
+  try { return JSON.parse(localStorage.getItem('game_scores') || '[]'); } catch { return []; }
+}
+function setGameScores(arr) { localStorage.setItem('game_scores', JSON.stringify(arr)); gameScores = arr; }
 
 function getPending() {
   try { return JSON.parse(localStorage.getItem('msgs_pending') || '[]'); } catch { return []; }
@@ -1681,7 +1843,7 @@ async function pushToGist() {
   const token = localStorage.getItem('gist_token') || GIST_TOKEN;
   if (!token) return false;
   try {
-    const data = { messages, friends, updatedAt: new Date().toISOString() };
+    const data = { messages, friends, gameScores, updatedAt: new Date().toISOString() };
     const res = await fetch(GIST_API, {
       method: 'PATCH',
       headers: { 'Authorization': 'token ' + token, 'Content-Type': 'application/json' },
@@ -1701,19 +1863,28 @@ async function autoSync() {
       const cloud = await res.json();
       const cloudMsgs = Array.isArray(cloud) ? cloud : (cloud.messages || []);
       const cloudFriends = cloud.friends || friends;
+      const cloudScores = cloud.gameScores || [];
       const cloudIds = new Set(cloudMsgs.map(m => m.id));
       const newOnes = pending.filter(m => !cloudIds.has(m.id));
       if (newOnes.length > 0) {
         messages = [...newOnes, ...cloudMsgs].slice(0, 200);
         friends = cloudFriends;
-        if (await pushToGist()) {
-          setPending([]);
-          renderMessages();
-          renderFriends();
-        }
+      }
+      // 合并游戏成绩（去重后取最新50条）
+      const mergedScores = mergeGameScores(cloudScores, gameScores).slice(0, 50);
+      gameScores = mergedScores; setGameScores(mergedScores);
+      if (await pushToGist()) {
+        setPending([]);
+        renderMessages();
+        renderFriends();
       }
     }
   } catch {}
+}
+function mergeGameScores(cloud, local) {
+  const map = new Map();
+  [...cloud, ...local].forEach(s => map.set(s.id, s));
+  return [...map.values()].sort((a, b) => b.score - a.score);
 }
 // ===== 性能优化：云同步锁 =====
 let _syncLock = false;
@@ -1759,8 +1930,10 @@ async function loadData() {
   // 立即渲染本地数据，不阻塞页面
   const localMsgs = getMessages();
   const localFriends = getFriends();
+  const localScores = getGameScores();
   if (localMsgs.length > 0) messages = localMsgs;
   if (localFriends.length > 0) friends = localFriends;
+  if (localScores.length > 0) gameScores = localScores;
   renderMessages();
   renderFriends();
   renderFriendShowcase();
@@ -1776,6 +1949,7 @@ async function loadData() {
       if (cloud.messages) {
         messages = cloud.messages;
         friends = cloud.friends || friends;
+        if (cloud.gameScores) { gameScores = cloud.gameScores; setGameScores(gameScores); }
         setMessages(messages); setFriends(friends);
         renderMessages(); renderFriends(); updateBadges();
       } else if (Array.isArray(cloud)) {
@@ -1916,6 +2090,7 @@ function switchMobileTab(tab) {
   document.querySelectorAll('.mobile-panel').forEach(p => p.classList.remove('active'));
   if (tab === 'anniversary') document.getElementById('mobileAnniversary').classList.add('active');
   if (tab === 'mood') document.getElementById('mobileMood').classList.add('active');
+  if (tab === 'game') document.getElementById('mobileGame').classList.add('active');
 
   // 首页：内容区显示
   if (tab === 'home' || tab === 'mine') {
@@ -1947,6 +2122,302 @@ function toggleMobileNav() {
   sidebar.style.flexDirection = 'column';
   sidebar.style.gap = '12px';
   sidebar.style.padding = '20px 16px';
+}
+
+// ==================== 恐龙跑酷游戏 ====================
+// 基于 wayou/t-rex-runner 原理重构
+let gameLoop = null;
+let gRunning = false;
+let gScore = 0;
+let gSpeed = 5;
+let gLastObstacle = 0;
+let gFrame = 0;
+let gPendingScore = 0; // 待提交的分数
+const GROUND_Y_RATIO = 0.82;
+
+let gCanvas, gCtx;
+let gDino, gObstacles, gClouds, gStars;
+let gCanvasW, gCanvasH, gGroundY;
+
+function startMobileGame() {
+  const intro = document.getElementById('mobileGameIntro');
+  gCanvas = document.getElementById('mobileGameCanvas');
+  if (!gCanvas) return;
+  gCtx = gCanvas.getContext('2d');
+  gCanvasW = Math.min(320, window.innerWidth - 24);
+  gCanvasH = Math.round(gCanvasW * 0.45);
+  gCanvas.width = gCanvasW;
+  gCanvas.height = gCanvasH;
+  gGroundY = Math.round(gCanvasH * GROUND_Y_RATIO);
+
+  intro.style.display = 'none';
+  gCanvas.style.display = 'block';
+
+  gDino = { x: 20, y: gGroundY - 44, w: 36, h: 44, vy: 0, jumping: false, ducking: false };
+  gObstacles = [];
+  gClouds = [];
+  gStars = [];
+  gScore = 0;
+  gSpeed = 5;
+  gFrame = 0;
+  gLastObstacle = 0;
+  gRunning = true;
+  gPendingScore = 0;
+
+  // 生成初始星星
+  for (let i = 0; i < 6; i++) gStars.push({ x: Math.random() * gCanvasW, y: Math.random() * gCanvasH * 0.6, r: Math.random() * 1.5 + 0.5, a: Math.random() });
+
+  // 启动主循环
+  if (gameLoop) cancelAnimationFrame(gameLoop);
+  gameLoop = requestAnimationFrame(gameTick);
+
+  // 点击/空格 跳跃
+  const jump = (e) => {
+    if (!gRunning) return;
+    if (e) e.preventDefault();
+    if (!gDino.jumping) { gDino.vy = -11; gDino.jumping = true; }
+  };
+  gCanvas.onclick = jump;
+  gCanvas.ontouchstart = jump;
+  document.onkeydown = (e) => {
+    if (e.code === 'Space' || e.key === ' ') { e.preventDefault(); jump(); }
+    if (e.code === 'ArrowDown') { gDino.ducking = true; }
+  };
+  document.onkeyup = (e) => { if (e.code === 'ArrowDown') gDino.ducking = false; };
+}
+
+function gameTick() {
+  if (!gRunning) return;
+  gFrame++;
+  update();
+  draw();
+  gameLoop = requestAnimationFrame(gameTick);
+}
+
+function update() {
+  const GRAVITY = 0.6;
+  // 跳跃物理
+  if (gDino.jumping) {
+    gDino.vy += GRAVITY;
+    gDino.y += gDino.vy;
+    if (gDino.y >= gGroundY - gDino.h) {
+      gDino.y = gGroundY - gDino.h;
+      gDino.jumping = false;
+      gDino.vy = 0;
+    }
+  }
+  // 速度递增
+  if (gFrame % 600 === 0) gSpeed += 0.5;
+  // 分数
+  if (gFrame % 6 === 0) gScore++;
+  // 云朵
+  if (gFrame % 90 === 0) gClouds.push({ x: gCanvasW + 10, y: Math.random() * gCanvasH * 0.4 + 5, w: 40, h: 14 });
+  gClouds.forEach(c => c.x -= 1);
+  gClouds = gClouds.filter(c => c.x > -50);
+  // 星星闪烁
+  gStars.forEach(s => s.a = 0.3 + 0.7 * Math.abs(Math.sin(gFrame * 0.05 + s.r)));
+  // 障碍物
+  if (gFrame - gLastObstacle > 80 + Math.random() * 80) {
+    const r = Math.random();
+    if (r < 0.6) {
+      // 小仙人掌
+      gObstacles.push({ x: gCanvasW + 10, y: gGroundY - 32, w: 14, h: 32, type: 'cactus_s' });
+    } else if (r < 0.85) {
+      // 大仙人掌
+      gObstacles.push({ x: gCanvasW + 10, y: gGroundY - 44, w: 20, h: 44, type: 'cactus_b' });
+    } else {
+      // 飞行敌人
+      gObstacles.push({ x: gCanvasW + 10, y: gGroundY - 70 - Math.random() * 30, w: 30, h: 20, type: 'bird' });
+    }
+    gLastObstacle = gFrame;
+  }
+  gObstacles.forEach(o => o.x -= gSpeed);
+  gObstacles = gObstacles.filter(o => o.x > -50);
+  // 碰撞检测
+  const dh = gDino.ducking ? gDino.h * 0.6 : gDino.h;
+  const dy = gDino.ducking ? gDino.y + gDino.h * 0.4 : gDino.y;
+  for (const o of gObstacles) {
+    const shrink = 4;
+    if (gDino.x + shrink < o.x + o.w - shrink &&
+        gDino.x + gDino.w - shrink > o.x + shrink &&
+        dy + shrink < o.y + o.h - shrink &&
+        dy + dh - shrink > o.y + shrink) {
+      gameOver();
+      return;
+    }
+  }
+}
+
+function draw() {
+  const ctx = gCtx;
+  // 半透明背景（保留背景可见）
+  ctx.clearRect(0, 0, gCanvasW, gCanvasH);
+  // 星星
+  gStars.forEach(s => {
+    ctx.globalAlpha = s.a;
+    ctx.fillStyle = 'rgba(255,255,255,0.8)';
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+    ctx.fill();
+  });
+  ctx.globalAlpha = 1;
+  // 云朵
+  gClouds.forEach(c => {
+    ctx.fillStyle = 'rgba(255,255,255,0.15)';
+    ctx.beginPath();
+    ctx.ellipse(c.x + c.w / 2, c.y + c.h / 2, c.w / 2, c.h / 2, 0, 0, Math.PI * 2);
+    ctx.fill();
+  });
+  // 地面线
+  ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(0, gGroundY); ctx.lineTo(gCanvasW, gGroundY);
+  ctx.stroke();
+  // 地面纹理（线条）
+  ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+  for (let x = (gFrame * gSpeed * -1) % 20; x < gCanvasW; x += 20) {
+    ctx.beginPath(); ctx.moveTo(x, gGroundY); ctx.lineTo(x + 8, gGroundY + 4); ctx.stroke();
+  }
+  // 障碍物
+  gObstacles.forEach(o => {
+    if (o.type === 'bird') drawBird(ctx, o);
+    else drawCactus(ctx, o);
+  });
+  // 恐龙
+  drawDino(ctx);
+  // 分数
+  ctx.fillStyle = 'rgba(255,255,255,0.5)';
+  ctx.font = 'bold 14px monospace';
+  ctx.fillText(gScore, gCanvasW - 36, 20);
+  ctx.font = '10px monospace';
+  ctx.fillText('HI ' + (parseInt(localStorage.getItem('hiScore') || '0')), gCanvasW - 60, 20);
+}
+
+function drawDino(ctx) {
+  const { x, y, w, h, ducking } = gDino;
+  if (ducking) {
+    // 趴下姿态（简化矩形）
+    ctx.fillStyle = '#667eea';
+    ctx.fillRect(x, y + h * 0.4, w, h * 0.6);
+    // 头
+    ctx.fillRect(x + w * 0.5, y + h * 0.4, w * 0.5, h * 0.4);
+  } else {
+    ctx.fillStyle = '#667eea';
+    // 身体
+    ctx.fillRect(x + 4, y + 12, w - 10, h - 12);
+    // 头
+    ctx.fillRect(x, y, w - 4, 14);
+    // 眼睛
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(x + w - 10, y + 3, 4, 4);
+    // 腿
+    const legOffset = Math.floor(gFrame / 6) % 2 === 0 ? 0 : 4;
+    ctx.fillStyle = '#667eea';
+    ctx.fillRect(x + 6, y + h - 12, 6, 12 - legOffset);
+    ctx.fillRect(x + 16, y + h - 12, 6, 12 - (4 - legOffset));
+    // 尾巴
+    ctx.fillRect(x - 4, y + 14, 8, 6);
+  }
+}
+
+function drawCactus(ctx, o) {
+  ctx.fillStyle = '#38ef7d';
+  if (o.type === 'cactus_s') {
+    ctx.fillRect(o.x + 3, o.y + 4, 8, o.h - 4);
+    ctx.fillRect(o.x, o.y + 10, 14, 6);
+  } else {
+    ctx.fillRect(o.x + 4, o.y + 4, 12, o.h - 4);
+    ctx.fillRect(o.x, o.y + 14, 20, 6);
+    ctx.fillRect(o.x - 4, o.y + 18, 6, 14);
+    ctx.fillRect(o.x + 18, o.y + 12, 6, 16);
+  }
+}
+
+function drawBird(ctx, o) {
+  const wingY = Math.sin(gFrame * 0.4) * 4;
+  ctx.fillStyle = '#f8a5c2';
+  ctx.fillRect(o.x, o.y + wingY, o.w, 8);
+  ctx.fillRect(o.x, o.y - wingY, o.w, 8);
+  ctx.fillRect(o.x + 20, o.y, 10, 20);
+}
+
+function gameOver() {
+  gRunning = false;
+  if (gameLoop) cancelAnimationFrame(gameLoop);
+  gPendingScore = gScore;
+  // 更新最高分
+  const hi = parseInt(localStorage.getItem('hiScore') || '0');
+  if (gScore > hi) localStorage.setItem('hiScore', gScore);
+  // 弹出弹窗
+  document.getElementById('gameOverScore').innerHTML = gScore + ' <span>分</span>';
+  const nameInput = document.getElementById('gamePlayerName');
+  nameInput.value = '';
+  const hint = document.getElementById('gameOverHint');
+  hint.textContent = '排行榜第 ' + getRank(gScore) + ' 名可上榜';
+  document.getElementById('gameOverModal').classList.add('show');
+  setTimeout(() => nameInput.focus(), 100);
+}
+
+function getRank(score) {
+  const sorted = [...gameScores].sort((a, b) => b.score - a.score);
+  for (let i = 0; i < sorted.length; i++) {
+    if (score > sorted[i].score) return i + 1;
+    if (score === sorted[i].score) return i + 1;
+  }
+  return sorted.length + 1;
+}
+
+function submitGameScore() {
+  const name = document.getElementById('gamePlayerName').value.trim() || '匿名访客';
+  const entry = { id: Date.now(), name, score: gPendingScore, date: new Date().toLocaleDateString('zh-CN') };
+  gameScores = mergeGameScores(gameScores, [entry]);
+  setGameScores(gameScores);
+  closeGameOver();
+  // 尝试云同步
+  pushToGist().then(ok => {
+    if (ok) showToast('成绩已上榜并同步 ☁️');
+    else showToast('成绩已上榜（云同步失败）');
+  });
+  showGameLeaderboard();
+}
+
+function closeGameOver() {
+  document.getElementById('gameOverModal').classList.remove('show');
+  const intro = document.getElementById('mobileGameIntro');
+  const canvas = document.getElementById('mobileGameCanvas');
+  if (intro) intro.style.display = 'block';
+  if (canvas) { canvas.style.display = 'none'; canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height); }
+  document.onkeydown = null;
+  document.onkeyup = null;
+}
+
+function showGameLeaderboard() {
+  const list = document.getElementById('leaderboardList');
+  const sorted = [...gameScores].sort((a, b) => b.score - a.score).slice(0, 20);
+  if (sorted.length === 0) {
+    list.innerHTML = '<div class="leaderboard-empty">还没有成绩，去玩一局吧 🦖</div>';
+  } else {
+    list.innerHTML = sorted.map((s, i) => `
+      <div class="leaderboard-item rank${i + 1 <= 3 ? i + 1 : ''}">
+        <div class="leaderboard-rank">${i + 1}</div>
+        <div class="leaderboard-name">${escHtml(s.name)}</div>
+        <div class="leaderboard-score">${s.score}</div>
+        <div class="leaderboard-date">${s.date}</div>
+      </div>
+    `).join('');
+  }
+  document.getElementById('leaderboardModal').classList.add('show');
+}
+
+function closeLeaderboard() {
+  document.getElementById('leaderboardModal').classList.remove('show');
+}
+
+function escHtml(str) {
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
 }
 </script>
 
