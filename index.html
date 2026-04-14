@@ -1188,30 +1188,37 @@ document.addEventListener('keydown', (e) => {
 });
 
 // ====== 一言诗句 ======
+// 一言缓存 + 防卡死优化
 const HITOKOTO_API = 'https://v1.hitokoto.cn?c=i&c=k&c=a&c=j&encode=json';
-let lastHitokoto = '';
+const HITOKOTO_FALLBACKS = ['每一步都是回忆。','遇见你是最美的意外。','愿你被这世界温柔以待。','时光不老，我们不散。','感谢每一个有你的一天。'];
+let hitokotoIdx = 0;
+function showHitokoto(text, from) {
+  const textEl = document.getElementById('hitokotoText');
+  const fromEl = document.getElementById('hitokotoFrom');
+  if (textEl) {
+    textEl.style.opacity = '0';
+    setTimeout(() => {
+      textEl.textContent = text;
+      textEl.style.opacity = '1';
+    }, 200);
+  }
+  if (fromEl) fromEl.textContent = from || '';
+}
 function fetchHitokoto() {
-  fetch(HITOKOTO_API)
+  Promise.race([
+    fetch(HITOKOTO_API),
+    new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 3000))
+  ])
     .then(r => r.json())
-    .then(d => {
-      lastHitokoto = d.hitokoto;
-      const textEl = document.getElementById('hitokotoText');
-      const fromEl = document.getElementById('hitokotoFrom');
-      if (textEl) {
-        textEl.style.opacity = '0';
-        setTimeout(() => {
-          textEl.textContent = d.hitokoto;
-          textEl.style.opacity = '1';
-        }, 200);
-      }
-      if (fromEl) fromEl.textContent = d.from || '';
-    })
+    .then(d => showHitokoto(d.hitokoto, d.from))
     .catch(() => {
-      const textEl = document.getElementById('hitokotoText');
-      if (textEl) textEl.textContent = '每一步都是回忆。';
+      // 降级：本地循环，不发请求
+      hitokotoIdx = (hitokotoIdx + 1) % HITOKOTO_FALLBACKS.length;
+      showHitokoto(HITOKOTO_FALLBACKS[hitokotoIdx], '');
     });
 }
-fetchHitokoto();
+// 页面加载后延迟3秒再请求一言，不阻塞首屏
+setTimeout(fetchHitokoto, 3000);
 setInterval(fetchHitokoto, 45000);
 
 // ====== 增强：粒子系统 ======
@@ -1221,10 +1228,10 @@ setInterval(fetchHitokoto, 45000);
     'rgba(56,239,125,0.4)','rgba(254,214,227,0.5)'
   ];
   function spawn() {
+    if (document.querySelectorAll('.particle').length > 50) return;
     const p = document.createElement('div');
     p.className = 'particle';
     const size = Math.random() * 4 + 2;
-    const dx = (Math.random() - 0.5) * 80;
     const color = colors[Math.floor(Math.random() * colors.length)];
     p.style.cssText = [
       `width:${size}px`, `height:${size}px`,
@@ -1232,41 +1239,42 @@ setInterval(fetchHitokoto, 45000);
       `left:${Math.random()*100}%`,
       `bottom:${Math.random()*40}%`,
       `--dur:${Math.random()*6+4}s`,
-      `animation-delay:${Math.random()*3}s`,
-      `margin-left:${dx}px`
+      `animation-delay:${Math.random()*3}s`
     ].join(';');
     document.body.appendChild(p);
     setTimeout(() => p.remove(), 12000);
   }
-  setInterval(spawn, 1500);
-  for (let i = 0; i < 5; i++) setTimeout(spawn, i * 300);
+  // 优化：减少粒子生成频率（3秒/个），初始减少到3个
+  setInterval(spawn, 3000);
+  for (let i = 0; i < 3; i++) setTimeout(spawn, i * 400);
 })();
 
-// ====== 增强：3D 卡片倾斜 ======
+// ====== 增强：3D 卡片倾斜（优化版：缓存DOM引用 + 节流）======
 (function initTilt() {
   let ticking = false;
+  // 缓存卡片引用，不每次 querySelectorAll
+  function getTiltCards() { return document.querySelectorAll('.card-3d'); }
   document.addEventListener('mousemove', (e) => {
-    if (!ticking) {
-      requestAnimationFrame(() => {
-        document.querySelectorAll('.card-3d').forEach(card => {
-          const rect = card.getBoundingClientRect();
-          const cx = rect.left + rect.width / 2;
-          const cy = rect.top + rect.height / 2;
-          const ry = ((e.clientX - cx) / rect.width) * 6;
-          const rx = ((e.clientY - cy) / rect.height) * -6;
-          const inner = card.querySelector('.card-3d-inner');
-          if (inner) {
-            inner.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg)`;
-          }
-        });
-        ticking = false;
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      getTiltCards().forEach(card => {
+        const rect = card.getBoundingClientRect();
+        if (!rect.width) return;
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+        const inner = card.querySelector('.card-3d-inner');
+        if (inner) {
+          inner.style.transform = `rotateX(${((e.clientY - cy) / rect.height) * -6}deg) rotateY(${((e.clientX - cx) / rect.width) * 6}deg)`;
+        }
       });
-      ticking = true;
-    }
+      ticking = false;
+    });
   });
   document.addEventListener('mouseleave', () => {
-    document.querySelectorAll('.card-3d-inner').forEach(el => {
-      el.style.transform = '';
+    getTiltCards().forEach(card => {
+      const inner = card.querySelector('.card-3d-inner');
+      if (inner) inner.style.transform = '';
     });
   });
 })();
@@ -1707,32 +1715,75 @@ async function autoSync() {
     }
   } catch {}
 }
+// ===== 性能优化：云同步锁 =====
+let _syncLock = false;
+let _syncTimer = null;
+function scheduleSync(delay = 3000) {
+  clearTimeout(_syncTimer);
+  _syncTimer = setTimeout(() => _doSync(), delay);
+}
+async function _doSync() {
+  if (_syncLock) return;
+  _syncLock = true;
+  try {
+    const res = await Promise.race([
+      fetch(GIST_RAW + '?t=' + Date.now()),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000))
+    ]);
+    if (!res || !res.ok) { _syncLock = false; return; }
+    const cloud = await res.json();
+    const cloudMsgs = cloud.messages || [];
+    const cloudFriends = cloud.friends || [];
+    const cloudIds = new Set(cloudMsgs.map(m => m.id));
+    const pending = getPending();
+    const newOnes = pending.filter(m => !cloudIds.has(m.id));
+    let changed = false;
+    if (newOnes.length > 0) {
+      messages = [...newOnes, ...cloudMsgs].slice(0, 200);
+      friends = cloudFriends;
+      changed = true;
+      if (await pushToGist()) { setPending([]); }
+    } else if (cloudMsgs.length > messages.length || cloudMsgs[0]?.id !== messages[0]?.id) {
+      messages = cloudMsgs.slice(0, 200);
+      friends = cloudFriends;
+      setMessages(messages); setFriends(friends);
+      changed = true;
+    }
+    if (changed) { renderMessages(); renderFriends(); updateBadges(); }
+  } catch {}
+  _syncLock = false;
+}
+function autoSync() { scheduleSync(3000); }
+
 async function loadData() {
+  // 立即渲染本地数据，不阻塞页面
   const localMsgs = getMessages();
   const localFriends = getFriends();
   if (localMsgs.length > 0) messages = localMsgs;
   if (localFriends.length > 0) friends = localFriends;
-  try {
-    const res = await fetch(GIST_RAW + '?t=' + Date.now());
-    if (res.ok) {
-      const cloud = await res.json();
-      if (cloud.messages) {
-        messages = cloud.messages;
-        friends = cloud.friends || friends;
-        setMessages(messages);
-        setFriends(friends);
-        renderMessages();
-        renderFriends();
-        autoSync();
-        return;
-      }
-      if (Array.isArray(cloud)) { messages = cloud; setMessages(messages); renderMessages(); }
-    }
-  } catch {}
   renderMessages();
   renderFriends();
   renderFriendShowcase();
   updateBadges();
+  // 后台异步加载云端数据
+  try {
+    const res = await Promise.race([
+      fetch(GIST_RAW + '?t=' + Date.now()),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000))
+    ]);
+    if (res && res.ok) {
+      const cloud = await res.json();
+      if (cloud.messages) {
+        messages = cloud.messages;
+        friends = cloud.friends || friends;
+        setMessages(messages); setFriends(friends);
+        renderMessages(); renderFriends(); updateBadges();
+      } else if (Array.isArray(cloud)) {
+        messages = cloud; setMessages(messages); renderMessages();
+      }
+    }
+  } catch {}
+  scheduleSync(60000); // 1分钟后后台检查一次
 }
 
 // ==================== 朋友展示区 ====================
