@@ -1005,15 +1005,22 @@
           <h2>🛠️ 管理</h2>
           <button onclick="logoutAdmin()">退出</button>
         </div>
-        <div class="admin-section">
-          <div class="section-title">☁️ 留言同步</div>
-          <div class="sync-status" id="syncStatus">未开启</div>
-          <input type="password" class="token-input" id="gistToken" placeholder="粘贴 GitHub Token">
-          <button class="sync-btn" onclick="saveSyncToken()">开启同步</button>
+        <div class="admin-tabs" id="adminTabs">
+          <div class="admin-tab active" onclick="switchAdminTab('sync')">☁️ 同步</div>
+          <div class="admin-tab" onclick="switchAdminTab('friends')">👥 朋友</div>
         </div>
-        <button class="add-friend-btn" onclick="addFriend()">➕ 新增朋友</button>
-        <div class="friend-list" id="friendList"></div>
-        <div class="edit-form" id="editForm">
+        <div class="admin-content active" id="tabSync">
+          <div class="admin-section">
+            <div class="section-title">☁️ 留言同步</div>
+            <div class="sync-status" id="syncStatus">未开启</div>
+            <input type="password" class="token-input" id="gistToken" placeholder="粘贴 GitHub Token">
+            <button class="sync-btn" onclick="saveSyncToken()">开启同步</button>
+          </div>
+        </div>
+        <div class="admin-content" id="tabFriends">
+          <button class="add-friend-btn" onclick="addFriend()">➕ 新增朋友</button>
+          <div class="friend-list" id="friendList"></div>
+          <div class="edit-form" id="editForm">
           <input type="hidden" id="editIndex">
           <input type="text" id="editAvatar" placeholder="头像">
           <input type="text" id="editName" placeholder="名字">
@@ -1026,6 +1033,7 @@
             <button class="save" onclick="saveFriend()">保存</button>
             <button class="cancel" onclick="cancelEdit()">取消</button>
             <button class="del-btn" onclick="deleteFriendFromForm()">🗑️ 删除</button>
+          </div>
           </div>
         </div>
         <button class="export-btn" onclick="copyData()">📋 复制数据</button>
@@ -1865,6 +1873,15 @@ function switchMobileTab(tab) {
     document.getElementById('contentArea').style.display = 'none';
   }
 }
+function switchAdminTab(tab) {
+  document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.admin-content').forEach(c => c.classList.remove('active'));
+  const tabEl = document.querySelector(`.admin-tab[onclick*="${tab}"]`);
+  const contentEl = document.getElementById('tab' + tab.charAt(0).toUpperCase() + tab.slice(1));
+  if (tabEl) tabEl.classList.add('active');
+  if (contentEl) contentEl.classList.add('active');
+}
+
 function toggleMobileNav() {
   const sidebar = document.getElementById('sidebar');
   sidebar.style.display = sidebar.style.display === 'block' ? '' : 'block';
