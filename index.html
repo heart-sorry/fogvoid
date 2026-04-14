@@ -1989,9 +1989,15 @@ async function autoSync() {
   } catch {}
 }
 function mergeGameScores(cloud, local) {
-  const map = new Map();
-  [...cloud, ...local].forEach(s => map.set(s.id, s));
-  return [...map.values()].sort((a, b) => b.score - a.score);
+  // 同一玩家只保留最高分
+  const byName = new Map();
+  [...cloud, ...local].forEach(s => {
+    const existing = byName.get(s.name);
+    if (!existing || s.score > existing.score) {
+      byName.set(s.name, s);
+    }
+  });
+  return [...byName.values()].sort((a, b) => b.score - a.score);
 }
 // ===== 性能优化：云同步锁 =====
 let _syncLock = false;
