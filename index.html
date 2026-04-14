@@ -1154,6 +1154,15 @@ function updateClock() {
 updateClock();
 setInterval(updateClock, 1000);
 
+// ====== 键盘快捷键 ======
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    document.getElementById('modal').classList.remove('active');
+    document.getElementById('secretModal').classList.remove('active');
+    document.getElementById('quizModal').classList.remove('active');
+  }
+});
+
 // ====== 一言诗句 ======
 const HITOKOTO_API = 'https://v1.hitokoto.cn?c=i&c=k&c=a&c=j&encode=json';
 let lastHitokoto = '';
