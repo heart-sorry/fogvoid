@@ -229,6 +229,16 @@
     .music-title { font-size: 0.9rem; font-weight: 600; }
     .music-artist { font-size: 0.7rem; opacity: 0.7; }
     .music-time { font-size: 0.7rem; color: rgba(255,255,255,0.6); min-width: 36px; text-align: right; }
+    .music-progress-wrap {
+      margin-top: 5px; height: 3px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 2px; overflow: hidden;
+    }
+    .music-progress-bar {
+      height: 100%; background: linear-gradient(90deg, #667eea, #f093fb);
+      border-radius: 2px; width: 0%; transition: width 0.5s linear;
+      min-width: 0%;
+    }
 
     /* ===================== 纪念日 ===================== */
     .anniversary-card {
@@ -933,6 +943,7 @@
         <div class="music-info">
           <div class="music-title" id="musicTitle">点击播放音乐</div>
           <div class="music-artist">背景音乐</div>
+          <div class="music-progress-wrap"><div class="music-progress-bar" id="musicProgress"></div></div>
         </div>
         <div class="music-time" id="musicTime">0:00</div>
       </div>
@@ -1327,6 +1338,9 @@ audio.ontimeupdate = () => {
   const m = Math.floor(audio.currentTime / 60);
   const s = Math.floor(audio.currentTime % 60).toString().padStart(2,'0');
   document.getElementById('musicTime').textContent = `${m}:${s}`;
+  const pct = audio.duration > 0 ? (audio.currentTime / audio.duration * 100).toFixed(1) : 0;
+  const bar = document.getElementById('musicProgress');
+  if (bar) bar.style.width = pct + '%';
 };
 
 function openCurtain() {
