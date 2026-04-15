@@ -1306,29 +1306,50 @@
       <!-- 管理后台（PC端嵌入内容区） -->
       <div class="card admin-panel" id="adminPanel">
         <div class="admin-header">
-          <h2>🛠️ 管理</h2>
+          <h2>🛠️ 管理后台</h2>
           <button onclick="logoutAdmin()">退出</button>
         </div>
         <div class="admin-tabs" id="adminTabs">
           <div class="admin-tab active" onclick="switchAdminTab('sync')">☁️ 同步</div>
           <div class="admin-tab" onclick="switchAdminTab('friends')">👥 朋友</div>
+          <div class="admin-tab" onclick="switchAdminTab('messages')">💬 留言</div>
+          <div class="admin-tab" onclick="switchAdminTab('settings')">⚙️ 设置</div>
         </div>
+        
+        <!-- 同步Tab -->
         <div class="admin-content active" id="tabSync">
           <div class="admin-section">
-            <div class="section-title">☁️ 留言同步</div>
+            <div class="section-title">☁️ GitHub Gist 同步</div>
             <div class="sync-status" id="syncStatus">未开启</div>
             <input type="password" class="token-input" id="gistToken" placeholder="粘贴 GitHub Token">
-            <button class="sync-btn" onclick="saveSyncToken()">开启同步</button>
+            <button class="sync-btn" onclick="saveSyncToken()">开启/更新同步</button>
+          </div>
+          <div class="admin-section">
+            <div class="section-title">📊 同步状态</div>
+            <div style="font-size:0.7rem;color:rgba(255,255,255,0.5);line-height:1.8;">
+              <div>朋友数量: <span id="syncFriendsCount" style="color:#667eea">0</span></div>
+              <div>留言数量: <span id="syncMessagesCount" style="color:#f093fb">0</span></div>
+              <div>游戏成绩: <span id="syncScoresCount" style="color:#38ef7d">0</span></div>
+            </div>
+          </div>
+          <div class="admin-section">
+            <div class="section-title">🔄 手动同步</div>
+            <div style="display:flex;gap:6px;">
+              <button class="sync-btn" onclick="forceSync()" style="flex:1;">强制上传</button>
+              <button class="sync-btn" onclick="forcePull()" style="flex:1;background:rgba(102,126,234,0.3);">强制拉取</button>
+            </div>
           </div>
         </div>
+        
+        <!-- 朋友管理Tab -->
         <div class="admin-content" id="tabFriends">
           <button class="add-friend-btn" onclick="addFriend()">➕ 新增朋友</button>
           <div class="friend-list" id="friendList"></div>
           <div class="edit-form" id="editForm">
           <input type="hidden" id="editIndex">
-          <input type="text" id="editAvatar" placeholder="头像">
+          <input type="text" id="editAvatar" placeholder="头像URL">
           <input type="text" id="editName" placeholder="名字">
-          <input type="text" id="editTag" placeholder="标签">
+          <input type="text" id="editTag" placeholder="标签(逗号分隔)">
           <input type="date" id="editMeetDate">
           <input type="text" id="editSecretCode" placeholder="暗号">
           <textarea id="editMessage" placeholder="公开消息"></textarea>
@@ -1340,6 +1361,51 @@
           </div>
           </div>
         </div>
+        
+        <!-- 留言管理Tab -->
+        <div class="admin-content" id="tabMessages">
+          <div style="font-size:0.72rem;color:rgba(255,255,255,0.5);margin-bottom:12px;">💬 留言管理（可删除不当言论）</div>
+          <div id="adminMessageList" style="max-height:300px;overflow-y:auto;"></div>
+        </div>
+        
+        <!-- 设置Tab -->
+        <div class="admin-content" id="tabSettings">
+          <div class="admin-section">
+            <div class="section-title">🎨 站点外观</div>
+            <input type="text" class="token-input" id="adminSiteTitle" placeholder="站点标题" style="margin-bottom:8px;">
+            <select id="adminDefaultTheme" class="token-input" style="margin-bottom:8px;">
+              <option value="">默认主题</option>
+              <option value="theme-purple">🌙 暗紫</option>
+              <option value="theme-blue">🌌 夜空蓝</option>
+              <option value="theme-orange">🌅 暮光橙</option>
+              <option value="theme-green">🌲 森林绿</option>
+              <option value="theme-pink">🌸 樱花粉</option>
+            </select>
+            <button class="sync-btn" onclick="saveSiteSettings()">保存外观设置</button>
+          </div>
+          <div class="admin-section">
+            <div class="section-title">📅 纪念日设置</div>
+            <input type="text" class="token-input" id="adminAnnivName" placeholder="纪念日名称" style="margin-bottom:8px;">
+            <input type="date" id="adminAnnivDate" class="token-input" style="margin-bottom:8px;">
+            <button class="sync-btn" onclick="saveAnniversaryConfig()">保存纪念日</button>
+          </div>
+          <div class="admin-section">
+            <div class="section-title">🌤️ 天气API配置</div>
+            <input type="text" class="token-input" id="adminWeatherKey" placeholder="高德天气Key(可选)" style="margin-bottom:8px;">
+            <input type="text" class="token-input" id="adminWeatherCity" placeholder="城市代码如101010100" style="margin-bottom:8px;">
+            <button class="sync-btn" onclick="saveWeatherConfig()">保存天气设置</button>
+          </div>
+          <div class="admin-section">
+            <div class="section-title">🎵 背景音乐</div>
+            <input type="text" class="token-input" id="adminMusicUrl" placeholder="音乐文件URL" style="margin-bottom:8px;">
+            <button class="sync-btn" onclick="saveMusicConfig()">保存音乐设置</button>
+          </div>
+          <div class="admin-section">
+            <div class="section-title">🧹 数据管理</div>
+            <button class="sync-btn" onclick="clearAllData()" style="background:rgba(255,107,107,0.3);">⚠️ 清空所有本地数据</button>
+          </div>
+        </div>
+        
         <button class="export-btn" onclick="copyData()">📋 复制数据</button>
       </div>
     </div>
@@ -1897,7 +1963,7 @@ function openCurtain() {
   document.getElementById('curtain').classList.add('hidden');
   setTimeout(() => {
     document.getElementById('mainLayout').style.display = 'flex';
-    showGreeting(); loadData(); showMood(); initAnniversary(); updateAnniversaryLabel(); initWeather(); initVisitorCount(); initTheme(); initDailyQuiz(); renderCapsuleListM(); initParticles(); checkAchievements();
+    showGreeting(); loadData(); showMood(); initAnniversary(); updateAnniversaryLabel(); initWeather(); initVisitorCount(); initTheme(); initDailyQuiz(); renderCapsuleListM(); initParticles(); checkAchievements(); loadSiteSettings();
   }, 300);
 }
 
@@ -2776,11 +2842,32 @@ async function deleteMessage(id) {
 }
 
 // ==================== 数据同步 ====================
-async function pushToGist() {
+async function pushToGist(force = false) {
   const token = localStorage.getItem('gist_token') || GIST_TOKEN;
-  if (!token) return false;
+  if (!token && !force) return false;
   try {
-    const data = { messages, friends, gameScores, updatedAt: new Date().toISOString() };
+    // 收集所有需要同步的设置
+    const settings = {
+      site_title: localStorage.getItem('site_title') || '',
+      default_theme: localStorage.getItem('default_theme') || '',
+      anniv_name: localStorage.getItem('anniv_name') || '',
+      anniv_date: localStorage.getItem('anniv_date') || '',
+      amap_key: localStorage.getItem('amap_key') || '',
+      weather_city: localStorage.getItem('weather_city') || '',
+      music_url: localStorage.getItem('music_url') || ''
+    };
+    
+    // 如果所有设置都为空，则不包含settings
+    const hasSettings = Object.values(settings).some(v => v);
+    
+    const data = { 
+      messages, 
+      friends, 
+      gameScores, 
+      updatedAt: new Date().toISOString(),
+      ...(hasSettings && { settings })
+    };
+    
     const res = await fetch(GIST_API, {
       method: 'PATCH',
       headers: { 'Authorization': 'token ' + token, 'Content-Type': 'application/json' },
@@ -2895,6 +2982,18 @@ async function loadData() {
         if (cloud.gameScores) { gameScores = cloud.gameScores; setGameScores(gameScores); }
         setMessages(messages); setFriends(friends);
         renderMessages(); renderFriends(); updateBadges();
+        
+        // 同步设置
+        if (cloud.settings) {
+          const s = cloud.settings;
+          if (s.site_title) localStorage.setItem('site_title', s.site_title);
+          if (s.default_theme) localStorage.setItem('default_theme', s.default_theme);
+          if (s.anniv_name) localStorage.setItem('anniv_name', s.anniv_name);
+          if (s.anniv_date) localStorage.setItem('anniv_date', s.anniv_date);
+          if (s.amap_key) localStorage.setItem('amap_key', s.amap_key);
+          if (s.weather_city) localStorage.setItem('weather_city', s.weather_city);
+          if (s.music_url) localStorage.setItem('music_url', s.music_url);
+        }
       } else if (Array.isArray(cloud)) {
         messages = cloud; setMessages(messages); renderMessages();
       }
@@ -3041,7 +3140,67 @@ function saveSyncToken() {
   document.getElementById('syncStatus').textContent = '✅ 已开启';
   document.getElementById('syncStatus').classList.add('active');
   document.getElementById('gistToken').value = '';
+  updateSyncCounts();
   showToast('✅ 同步已开启！');
+}
+
+// 加载站点设置
+function loadSiteSettings() {
+  // 站点标题
+  const siteTitle = localStorage.getItem('site_title');
+  if (siteTitle) {
+    document.title = siteTitle;
+    const curtainTitle = document.querySelector('.curtain-title');
+    if (curtainTitle) curtainTitle.textContent = siteTitle;
+  }
+  
+  // 默认主题
+  const defaultTheme = localStorage.getItem('default_theme');
+  if (defaultTheme) {
+    const themeMap = { 'theme-purple': 0, 'theme-blue': 1, 'theme-orange': 2, 'theme-green': 3, 'theme-pink': 4 };
+    if (themeMap[defaultTheme] !== undefined) {
+      currentThemeIndex = themeMap[defaultTheme];
+      applyTheme(currentThemeIndex);
+    }
+  }
+  
+  // 纪念日设置
+  const annivName = localStorage.getItem('anniv_name');
+  const annivDate = localStorage.getItem('anniv_date');
+  if (annivName && annivDate) {
+    localStorage.setItem('anniversary_name', annivName);
+    localStorage.setItem('anniversary_date', annivDate);
+  }
+  
+  // 天气设置
+  const weatherCity = localStorage.getItem('weather_city');
+  if (weatherCity) {
+    localStorage.setItem('default_city', weatherCity);
+  }
+  
+  // 音乐设置
+  const musicUrl = localStorage.getItem('music_url');
+  if (musicUrl) {
+    audio.src = musicUrl;
+    document.getElementById('musicTitle').textContent = '点击播放音乐 🎵';
+  }
+  
+  // 更新同步状态显示
+  const token = localStorage.getItem('gist_token');
+  const syncStatus = document.getElementById('syncStatus');
+  if (syncStatus) {
+    syncStatus.textContent = token ? '✅ 已开启' : '未开启';
+    syncStatus.classList.toggle('active', !!token);
+  }
+}
+
+function updateSyncCounts() {
+  const friendsEl = document.getElementById('syncFriendsCount');
+  const msgsEl = document.getElementById('syncMessagesCount');
+  const scoresEl = document.getElementById('syncScoresCount');
+  if (friendsEl) friendsEl.textContent = friends.length;
+  if (msgsEl) msgsEl.textContent = messages.length;
+  if (scoresEl) scoresEl.textContent = gameScores.length;
 }
 
 // ==================== 移动端导航 ====================
@@ -3070,6 +3229,133 @@ function switchAdminTab(tab) {
   const contentEl = document.getElementById('tab' + tab.charAt(0).toUpperCase() + tab.slice(1));
   if (tabEl) tabEl.classList.add('active');
   if (contentEl) contentEl.classList.add('active');
+  
+  // 切换到留言tab时渲染留言列表
+  if (tab === 'messages') renderAdminMessages();
+  // 切换到设置tab时加载当前配置
+  if (tab === 'settings') loadAdminSettings();
+}
+
+// 渲染管理面板的留言列表
+function renderAdminMessages() {
+  const listEl = document.getElementById('adminMessageList');
+  if (!listEl) return;
+  
+  if (messages.length === 0) {
+    listEl.innerHTML = '<div style="text-align:center;color:rgba(255,255,255,0.3);padding:20px;">暂无留言</div>';
+    return;
+  }
+  
+  listEl.innerHTML = messages.map((msg, idx) => `
+    <div style="background:rgba(255,255,255,0.05);border-radius:8px;padding:10px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
+      <div style="flex:1;">
+        <div style="font-size:0.75rem;color:#f093fb;font-weight:600;">${msg.name}</div>
+        <div style="font-size:0.7rem;color:rgba(255,255,255,0.7);margin:4px 0;">${msg.text}</div>
+        <div style="font-size:0.6rem;color:rgba(255,255,255,0.3);">${msg.time}</div>
+      </div>
+      <button onclick="deleteMessage(${idx})" style="background:rgba(255,107,107,0.2);border:none;border-radius:6px;padding:6px 10px;color:#f87171;font-size:0.65rem;cursor:pointer;">删除</button>
+    </div>
+  `).join('');
+}
+
+function deleteMessage(idx) {
+  if (!confirm('确定删除这条留言？')) return;
+  messages.splice(idx, 1);
+  setMessages(messages);
+  renderMessages();
+  updateBadges();
+  autoSync();
+  renderAdminMessages();
+  showToast('留言已删除');
+}
+
+// 加载管理员设置
+function loadAdminSettings() {
+  const siteTitleEl = document.getElementById('adminSiteTitle');
+  const themeEl = document.getElementById('adminDefaultTheme');
+  const annivNameEl = document.getElementById('adminAnnivName');
+  const annivDateEl = document.getElementById('adminAnnivDate');
+  const weatherKeyEl = document.getElementById('adminWeatherKey');
+  const weatherCityEl = document.getElementById('adminWeatherCity');
+  const musicUrlEl = document.getElementById('adminMusicUrl');
+  
+  if (siteTitleEl) siteTitleEl.value = localStorage.getItem('site_title') || '';
+  if (themeEl) themeEl.value = localStorage.getItem('default_theme') || '';
+  if (annivNameEl) annivNameEl.value = localStorage.getItem('anniv_name') || '';
+  if (annivDateEl) annivDateEl.value = localStorage.getItem('anniv_date') || '';
+  if (weatherKeyEl) weatherKeyEl.value = localStorage.getItem('amap_key') || '';
+  if (weatherCityEl) weatherCityEl.value = localStorage.getItem('weather_city') || '';
+  if (musicUrlEl) musicUrlEl.value = localStorage.getItem('music_url') || '';
+}
+
+function saveSiteSettings() {
+  const title = document.getElementById('adminSiteTitle').value;
+  const theme = document.getElementById('adminDefaultTheme').value;
+  localStorage.setItem('site_title', title);
+  localStorage.setItem('default_theme', theme);
+  loadSiteSettings(); // 应用设置
+  showToast('站点设置已保存并应用');
+  // 触发同步
+  setTimeout(() => autoSync(), 500);
+}
+
+function saveAnniversaryConfig() {
+  const name = document.getElementById('adminAnnivName').value;
+  const date = document.getElementById('adminAnnivDate').value;
+  localStorage.setItem('anniv_name', name);
+  localStorage.setItem('anniv_date', date);
+  showToast('纪念日设置已保存，将在下一次访问时生效');
+  setTimeout(() => autoSync(), 500);
+}
+
+function saveWeatherConfig() {
+
+function saveWeatherConfig() {
+  const key = document.getElementById('adminWeatherKey').value;
+  const city = document.getElementById('adminWeatherCity').value;
+  localStorage.setItem('amap_key', key);
+  localStorage.setItem('weather_city', city);
+  showToast('天气设置已保存');
+  setTimeout(() => autoSync(), 500);
+}
+
+function saveMusicConfig() {
+  const url = document.getElementById('adminMusicUrl').value;
+  localStorage.setItem('music_url', url);
+  showToast('音乐设置已保存，重启页面后生效');
+  setTimeout(() => autoSync(), 500);
+}
+
+function clearAllData() {
+  if (!confirm('⚠️ 确定要清空所有本地数据吗？此操作不可恢复！')) return;
+  if (!confirm('再次确认：清空所有数据包括朋友、留言、成就等？')) return;
+  
+  localStorage.clear();
+  showToast('所有数据已清空，请刷新页面');
+  setTimeout(() => location.reload(), 1500);
+}
+
+// 强制上传
+function forceSync() {
+  showToast('正在强制上传...');
+  pushToGist(true).then(() => {
+    showToast('✅ 强制上传完成');
+  }).catch(err => {
+    showToast('❌ 上传失败: ' + err.message);
+  });
+}
+
+// 强制拉取
+function forcePull() {
+  showToast('正在强制拉取...');
+  loadData(true).then(() => {
+    showToast('✅ 强制拉取完成');
+    updateBadges();
+    renderMessages();
+    renderFriendShowcase();
+  }).catch(err => {
+    showToast('❌ 拉取失败: ' + err.message);
+  });
 }
 
 function toggleMobileNav() {
