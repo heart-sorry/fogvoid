@@ -249,6 +249,7 @@
     .a-title { font-size: 0.75rem; margin-bottom: 6px; opacity: 0.7; display: flex; align-items: center; gap: 6px; }
     .a-countdown { font-size: 2.2rem; font-weight: 800; line-height: 1; }
     .a-label { font-size: 0.65rem; opacity: 0.6; }
+    .a-label-custom { font-size: 0.7rem; opacity: 0.8; margin-top: 4px; color: #f8a5c2; }
 
     /* ===================== 默契问答 ===================== */
     .quiz-card {
@@ -1116,6 +1117,16 @@
         <div id="greetingBar" style="font-size:0.82rem; color:rgba(255,255,255,0.75); line-height:1.5"></div>
       </div>
 
+      <!-- 天气小部件 -->
+      <div class="card" id="weatherCard" style="padding: 10px 14px; display: none;">
+        <div class="card-label">🌤️ 今日天气</div>
+        <div id="weatherDisplay" style="display: flex; align-items: center; gap: 8px; margin-top: 4px;">
+          <span id="weatherIcon" style="font-size: 1.5rem;">🌡️</span>
+          <span id="weatherTemp" style="font-size: 1.1rem; font-weight: 600;">--°C</span>
+          <span id="weatherCity" style="font-size: 0.75rem; opacity: 0.6;">--</span>
+        </div>
+      </div>
+
       <!-- 心情（侧边栏精简版） -->
       <div class="card mood-card">
         <div class="card-label">✨ 今天的心情</div>
@@ -1129,6 +1140,7 @@
         <div class="card-label">🎄 纪念日</div>
         <div class="a-countdown" id="countdown">--</div>
         <div class="a-label">天</div>
+        <div class="a-label-custom" id="annivLabel"></div>
       </div>
 
       <!-- 默契问答（侧边栏） -->
@@ -1160,7 +1172,7 @@
         <a class="social-link" href="https://github.com/heart-sorry" target="_blank">🐙 GitHub</a>
       </div>
       <div style="font-size:0.6rem;color:rgba(255,255,255,0.15);text-align:center;margin-top:8px;letter-spacing:0.05em">
-        始于 2025 · 炸鸡腿
+        始于 2025 · 炸鸡腿 · 访客 <span id="visitorCount">--</span>
       </div>
       <div class="admin-link">
         <button class="admin-link-btn" onclick="promptAdminPassword()">⚙️ 管理</button>
@@ -1272,6 +1284,7 @@
         <div class="card-label">🎄 纪念日</div>
         <div class="a-countdown" id="countdownM">--</div>
         <div class="a-label">天</div>
+        <div class="a-label-custom" id="annivLabelM"></div>
       </div>
       <div class="card quiz-card" onclick="startQuiz()">
         <div class="card-label">🧠 MBTI</div>
@@ -1402,8 +1415,14 @@ const GIST_API = 'https://api.github.com/gists/' + GIST_ID;
 const GIST_RAW = `https://gist.githubusercontent.com/heart-sorry/${GIST_ID}/raw/data.json`;
 const GIST_TOKEN = '';
 const ADMIN_PASSWORD = '5201314';
-const ANNIVERSARY_DATE = '2025-12-25';
 const musicUrl = './music.mp3';
+
+// 多个纪念日配置（name: 显示名称, date: 日期, type: 类型）
+const ANNIVERSARIES = [
+    { name: '相遇', date: '2026-02-14', type: 'meet' },
+    { name: '在一起', date: '2026-04-13', type: 'love' },
+    { name: '一百天', date: '2026-07-22', type: 'milestone' }
+];
 
 // 游戏成绩本地存储
 function getGameScores() {
@@ -1673,7 +1692,7 @@ function openCurtain() {
   document.getElementById('curtain').classList.add('hidden');
   setTimeout(() => {
     document.getElementById('mainLayout').style.display = 'flex';
-    showGreeting(); loadData(); showMood(); initAnniversary();
+    showGreeting(); loadData(); showMood(); initAnniversary(); updateAnniversaryLabel(); initWeather(); initVisitorCount();
   }, 300);
 }
 
@@ -1696,12 +1715,106 @@ function toggleMusic() {
 
 // ==================== 纪念日 ====================
 function initAnniversary() {
-  const target = new Date(ANNIVERSARY_DATE);
   const today = new Date();
-  const diff = Math.floor((target - today) / 86400000);
-  const n = diff > 0 ? diff : 0;
-  document.getElementById('countdown').textContent = n;
-  if (document.getElementById('countdownM')) document.getElementById('countdownM').textContent = n;
+  today.setHours(0,0,0,0);
+  
+  // 找到下一个即将到来的纪念日
+  let nextAnniv = null;
+  let nextDiff = Infinity;
+  
+  ANNIVERSARIES.forEach(a => {
+    const target = new Date(a.date);
+    target.setHours(0,0,0,0);
+    let diff = Math.floor((target - today) / 86400000);
+    
+    // 如果已过，调整到下一年
+    if (diff < 0) {
+      target.setFullYear(target.getFullYear() + 1);
+      diff = Math.floor((target - today) / 86400000);
+    }
+    
+    if (diff < nextDiff) {
+      nextDiff = diff;
+      nextAnniv = { ...a, target, diff };
+    }
+  });
+  
+  if (nextAnniv) {
+    const icon = nextAnniv.type === 'love' ? '💕' : (nextAnniv.type === 'meet' ? '✨' : '🎯');
+    document.getElementById('countdown').textContent = nextAnniv.diff;
+    document.getElementById('countdown').setAttribute('data-label', icon + ' ' + nextAnniv.name);
+    if (document.getElementById('countdownM')) {
+      document.getElementById('countdownM').textContent = nextAnniv.diff;
+      document.getElementById('countdownM').setAttribute('data-label', icon + ' ' + nextAnniv.name);
+    }
+  }
+}
+
+// 更新纪念日显示（添加标签）
+function updateAnniversaryLabel() {
+  const el = document.getElementById('countdown');
+  const label = el.getAttribute('data-label');
+  if (label) {
+    const parent = el.parentElement;
+    let labelEl = parent.querySelector('.a-label-custom');
+    if (!labelEl) {
+      labelEl = document.createElement('div');
+      labelEl.className = 'a-label-custom';
+      parent.appendChild(labelEl);
+    }
+    labelEl.textContent = label;
+  }
+}
+
+// ==================== 天气小部件 ====================
+async function initWeather() {
+  const card = document.getElementById('weatherCard');
+  if (!card) return;
+  
+  try {
+    const res = await fetch('https://wttr.in/?format=j1');
+    const data = await res.json();
+    
+    const current = data.current_condition[0];
+    const temp = current.temp_C;
+    const weatherCode = current.weatherCode;
+    const city = data.nearest_area[0]?.areaName[0]?.value || '未知';
+    
+    // 天气图标映射
+    const iconMap = {
+      '113': '☀️', '116': '⛅', '119': '☁️', '122': '🌧️',
+      '200': '⛈️', '389': '🌧️', '386': '🌧️'
+    };
+    const icon = iconMap[weatherCode] || '🌤️';
+    
+    document.getElementById('weatherIcon').textContent = icon;
+    document.getElementById('weatherTemp').textContent = temp + '°C';
+    document.getElementById('weatherCity').textContent = city;
+    card.style.display = 'block';
+  } catch (e) {
+    console.log('天气获取失败:', e);
+  }
+}
+
+// ==================== 访客计数器 ====================
+function initVisitorCount() {
+  const el = document.getElementById('visitorCount');
+  if (!el) return;
+  
+  // 从本地读取计数器
+  let count = parseInt(localStorage.getItem('visitor_count') || '0', 10);
+  count++;
+  localStorage.setItem('visitor_count', count);
+  el.textContent = count;
+  
+  // 异步尝试云端同步（需要扩展 Gist 结构）
+  syncVisitorCount(count);
+}
+
+async function syncVisitorCount(count) {
+  // 尝试从 Gist 获取当前计数并更新
+  // 注意：这需要扩展 Gist 数据结构，暂时记录日志
+  console.log('访客计数:', count);
 }
 
 // ==================== 搜索 ====================
