@@ -1212,6 +1212,7 @@
         <div id="timeCapsuleInput" style="display:none;margin-top:8px;">
           <textarea id="capsuleText" placeholder="写给未来的自己..." style="width:100%;background:rgba(0,0,0,0.2);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:8px;color:#fff;font-size:0.75rem;resize:none;height:60px;"></textarea>
           <button onclick="saveTimeCapsule()" style="margin-top:6px;width:100%;background:rgba(119,82,254,0.3);border:none;border-radius:8px;padding:6px;color:rgba(255,255,255,0.8);font-size:0.7rem;cursor:pointer;">💾 存进胶囊</button>
+          <button onclick="showAllCapsules()" style="margin-top:4px;width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:6px;color:rgba(255,255,255,0.5);font-size:0.65rem;cursor:pointer;">📋 查看全部胶囊</button>
         </div>
       </div>
       <div class="admin-link">
@@ -2321,12 +2322,50 @@ function saveTimeCapsule() {
   document.getElementById('capsuleText').value = '';
   document.getElementById('timeCapsuleInput').style.display = 'none';
   showToast('胶囊已保存！📦');
+  trackAchievement('capsule');
   renderCapsuleListM();
 }
 
 function toggleTimeCapsuleMobile() {
   const el = document.getElementById('capsuleInputM');
   el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+
+function showAllCapsules() {
+  const capsules = JSON.parse(localStorage.getItem('time_capsules') || '[]');
+  
+  if (capsules.length === 0) {
+    showToast('还没有胶囊哦～');
+    return;
+  }
+  
+  let capsuleModal = document.getElementById('capsulesModal');
+  if (!capsuleModal) {
+    capsuleModal = document.createElement('div');
+    capsuleModal.id = 'capsulesModal';
+    capsuleModal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:9999;display:none;align-items:center;justify-content:center;';
+    capsuleModal.onclick = function(e) { if(e.target === this) this.style.display = 'none'; };
+    document.body.appendChild(capsuleModal);
+  }
+  
+  capsuleModal.innerHTML = `<div style="background:linear-gradient(135deg,#1a1a2e,#16213e);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:20px;max-width:340px;width:90%;max-height:80vh;overflow-y:auto;">
+    <div style="text-align:center;margin-bottom:16px;">
+      <span style="font-size:2rem;">📦</span>
+      <div style="font-size:1rem;color:#fff;font-weight:600;margin-top:4px;">我的时间胶囊</div>
+      <div style="font-size:0.7rem;color:rgba(255,255,255,0.5);">共 ${capsules.length} 个</div>
+    </div>
+    ${capsules.map(c => {
+      const date = new Date(c.date);
+      const dateStr = `${date.getFullYear()}/${date.getMonth()+1}/${date.getDate()} ${date.getHours()}:${date.getMinutes().toString().padStart(2,'0')}`;
+      return `<div style="background:rgba(119,82,254,0.1);border-radius:12px;padding:12px;margin-bottom:10px;">
+        <div style="font-size:0.8rem;color:rgba(255,255,255,0.9);line-height:1.5;word-break:break-all;">${c.text}</div>
+        <div style="font-size:0.65rem;color:rgba(255,255,255,0.4);margin-top:8px;">${dateStr}</div>
+      </div>`;
+    }).join('')}
+    <button onclick="document.getElementById('capsulesModal').style.display='none'" style="width:100%;margin-top:8px;background:rgba(255,255,255,0.1);border:none;border-radius:20px;padding:10px;color:rgba(255,255,255,0.7);cursor:pointer;">关闭</button>
+  </div>`;
+  
+  capsuleModal.style.display = 'flex';
 }
 
 function saveTimeCapsuleMobile() {
