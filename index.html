@@ -1184,7 +1184,7 @@
         <button onclick="toggleTheme()" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:6px 12px;font-size:0.65rem;color:rgba(255,255,255,0.6);cursor:pointer;">🎨 换肤</button>
         <button onclick="likeSite()" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:6px 12px;font-size:0.65rem;color:rgba(255,255,255,0.6);cursor:pointer;">❤️ 喜欢</button>
       </div>
-      
+
       <!-- 今日心情投票 -->
       <div style="margin-top:16px;padding:10px;background:rgba(255,255,255,0.03);border-radius:12px;border:1px solid rgba(255,255,255,0.06);">
         <div style="font-size:0.7rem;color:rgba(255,255,255,0.5);margin-bottom:8px;">💭 今天感觉如何？</div>
@@ -1199,6 +1199,11 @@
         <div id="quickMoodResult" style="font-size:0.65rem;color:rgba(255,255,255,0.3);text-align:center;margin-top:6px;"></div>
       </div>
       
+      <!-- 成就入口 -->
+      <button onclick="showAchievements()" style="width:100%;margin-top:12px;background:linear-gradient(135deg,rgba(251,191,36,0.2),rgba(245,158,11,0.15));border:1px solid rgba(251,191,36,0.2);border-radius:12px;padding:10px;color:rgba(255,255,255,0.7);font-size:0.72rem;cursor:pointer;">
+       🏆 查看成就 (<span id="achievementCount">0</span>/<span>10</span>)
+      </button>
+
       <!-- 秘密日记胶囊 -->
       <div style="margin-top:12px;">
         <button onclick="toggleTimeCapsule()" style="width:100%;background:linear-gradient(135deg,rgba(119,82,254,0.2),rgba(56,239,125,0.15));border:1px solid rgba(119,82,254,0.2);border-radius:12px;padding:10px;color:rgba(255,255,255,0.7);font-size:0.72rem;cursor:pointer;">
@@ -1382,6 +1387,17 @@
             <button onclick="showGameLeaderboard()" style="background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.5);border:1px solid rgba(255,255,255,0.1);padding:6px 16px;border-radius:12px;font-size:0.75rem;cursor:pointer;">🏆 排行榜</button>
           </div>
         </div>
+
+        <!-- PC端游戏入口 -->
+        <div id="pcGameIntro" style="display:none;text-align:center;">
+          <div style="font-size:3rem;margin-bottom:12px">🦖</div>
+          <div style="color:rgba(255,255,255,0.7);font-size:0.9rem;margin-bottom:16px">恐龙跑酷</div>
+          <div style="color:rgba(255,255,255,0.35);font-size:0.75rem;margin-bottom:20px">空格键跳跃</div>
+          <button onclick="startPCGame()" style="background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;padding:10px 28px;border-radius:20px;font-size:0.85rem;cursor:pointer;">开始游戏</button>
+          <div style="margin-top:20px">
+            <button onclick="showGameLeaderboard()" style="background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.5);border:1px solid rgba(255,255,255,0.1);padding:6px 16px;border-radius:12px;font-size:0.75rem;cursor:pointer;">🏆 排行榜</button>
+          </div>
+        </div>
         <canvas id="mobileGameCanvas" style="display:none;border-radius:8px;max-width:100%;opacity:0.92;margin-top:10px;"></canvas>
       </div>
     </div>
@@ -1433,14 +1449,14 @@
             </div>
           </div>
         </div>
-        
+
         <!-- 今日运势（移动端） -->
         <div style="background:linear-gradient(135deg,rgba(253,121,168,0.15),rgba(162,138,250,0.1));border-radius:12px;padding:12px;margin-bottom:12px;">
           <div style="font-size:0.75rem;color:rgba(255,255,255,0.5);margin-bottom:8px;">🔮 今日运势</div>
           <div id="fortuneResultM" style="font-size:0.75rem;color:rgba(255,255,255,0.7);margin-bottom:8px;">点击抽签~</div>
           <button onclick="drawFortune()" style="background:linear-gradient(135deg,rgba(253,121,168,0.3),rgba(162,138,250,0.3));border:none;border-radius:20px;padding:6px 16px;font-size:0.7rem;color:rgba(255,255,255,0.8);cursor:pointer;">✨ 抽一签</button>
         </div>
-        
+
         <!-- 时间胶囊（移动端） -->
         <div style="background:rgba(119,82,254,0.1);border-radius:12px;padding:12px;">
           <div style="font-size:0.75rem;color:rgba(255,255,255,0.5);margin-bottom:8px;">📦 我的胶囊</div>
@@ -1880,7 +1896,7 @@ function openCurtain() {
   document.getElementById('curtain').classList.add('hidden');
   setTimeout(() => {
     document.getElementById('mainLayout').style.display = 'flex';
-    showGreeting(); loadData(); showMood(); initAnniversary(); updateAnniversaryLabel(); initWeather(); initVisitorCount(); initTheme(); initDailyQuiz(); renderCapsuleListM(); initParticles();
+    showGreeting(); loadData(); showMood(); initAnniversary(); updateAnniversaryLabel(); initWeather(); initVisitorCount(); initTheme(); initDailyQuiz(); renderCapsuleListM(); initParticles(); checkAchievements();
   }, 300);
 }
 
@@ -2003,7 +2019,7 @@ async function syncVisitorCount(count) {
   // 尝试从 Gist 获取当前计数并更新
   // 注意：这需要扩展 Gist 数据结构，暂时记录日志
   console.log('访客计数:', count);
-  
+
   // 检查并更新连续访问天数
   initStreak();
 }
@@ -2012,11 +2028,11 @@ function initStreak() {
   const streakCard = document.getElementById('streakCard');
   const streakDays = document.getElementById('streakDays');
   if (!streakCard || !streakDays) return;
-  
+
   const today = new Date().toDateString();
   const lastVisit = localStorage.getItem('last_visit_date');
   const streak = parseInt(localStorage.getItem('visit_streak') || '0', 10);
-  
+
   if (lastVisit === today) {
     // 今天已经访问过
     streakDays.textContent = streak;
@@ -2039,7 +2055,7 @@ function initStreak() {
     localStorage.setItem('visit_streak', '1');
     streakDays.textContent = '1';
   }
-  
+
   localStorage.setItem('last_visit_date', today);
   streakCard.style.display = 'block';
 }
@@ -2048,10 +2064,10 @@ function initStreak() {
 function initParticles() {
   const container = document.getElementById('particlesContainer');
   if (!container) return;
-  
+
   const particleCount = 15;
   const emojis = ['✨', '💫', '🌟', '💕', '🎵', '🌸', '🍀', '🦋'];
-  
+
   for (let i = 0; i < particleCount; i++) {
     createParticle(container, emojis);
   }
@@ -2070,13 +2086,110 @@ function createParticle(container, emojis) {
     top: ${Math.random() * 100}%;
     animation: floatParticle ${8 + Math.random() * 12}s linear infinite;
   `;
-  
+
   container.appendChild(particle);
-  
+
   setTimeout(() => {
     particle.remove();
     createParticle(container, emojis);
   }, (8 + Math.random() * 12) * 1000);
+}
+
+// ==================== 成就系统 ====================
+const ACHIEVEMENTS = [
+  { id: 'first_visit', name: '初次见面', icon: '👋', desc: '第一次访问网站', condition: () => true },
+  { id: 'streak_3', name: '连续访问', icon: '🔥', desc: '连续访问3天', condition: () => parseInt(localStorage.getItem('visit_streak') || '0') >= 3 },
+  { id: 'streak_7', name: '一周坚持', icon: '💪', desc: '连续访问7天', condition: () => parseInt(localStorage.getItem('visit_streak') || '0') >= 7 },
+  { id: 'first_message', name: '留个言吧', icon: '💬', desc: '首次留言', condition: () => localStorage.getItem('has_message') === 'true' },
+  { id: 'first_like', name: '点赞支持', icon: '❤️', desc: '第一次点赞', condition: () => localStorage.getItem('has_liked_today') },
+  { id: 'capsule_1', name: '时间胶囊', icon: '📦', desc: '写下第一个胶囊', condition: () => JSON.parse(localStorage.getItem('time_capsules') || '[]').length >= 1 },
+  { id: 'quiz_master', name: '答题达人', icon: '🎯', desc: '完成10次答题', condition: () => {
+    const quizHistory = JSON.parse(localStorage.getItem('daily_quiz_answers') || '[]');
+    return quizHistory.length >= 10;
+  }},
+  { id: 'theme_explorer', name: '换装达人', icon: '🎨', desc: '切换5次主题', condition: () => parseInt(localStorage.getItem('theme_switches') || '0') >= 5 },
+  { id: 'random_friend', name: '社交达人', icon: '🎲', desc: '随机查看10个朋友', condition: () => parseInt(localStorage.getItem('random_friend_views') || '0') >= 10 },
+  { id: 'mood_tracker', name: '心情记录', icon: '😊', desc: '记录5次心情', condition: () => {
+    const moodStats = JSON.parse(localStorage.getItem('mood_stats') || '{}');
+    const total = Object.values(moodStats).reduce((a, b) => a + b, 0);
+    return total >= 5;
+  }}
+];
+
+function checkAchievements() {
+  const unlocked = JSON.parse(localStorage.getItem('achievements') || '[]');
+  let newUnlock = false;
+
+  ACHIEVEMENTS.forEach(ach => {
+    if (!unlocked.includes(ach.id) && ach.condition()) {
+      unlocked.push(ach.id);
+      newUnlock = true;
+      showToast(`🏆 解锁成就: ${ach.name}！`);
+    }
+  });
+
+  localStorage.setItem('achievements', JSON.stringify(unlocked));
+  
+  // 更新成就计数显示
+  const achCountEl = document.getElementById('achievementCount');
+  if (achCountEl) achCountEl.textContent = unlocked.length;
+  
+  return unlocked;
+}
+
+function showAchievements() {
+  const unlocked = JSON.parse(localStorage.getItem('achievements') || '[]');
+
+  const achHTML = ACHIEVEMENTS.map(ach => {
+    const isUnlocked = unlocked.includes(ach.id);
+    return `<div style="display:flex;align-items:center;gap:10px;padding:8px;background:${isUnlocked ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.03)'};border-radius:8px;margin-bottom:6px;opacity:${isUnlocked ? 1 : 0.4};">
+      <span style="font-size:1.5rem;">${ach.icon}</span>
+      <div>
+        <div style="font-size:0.75rem;color:rgba(255,255,255,0.9);font-weight:600;">${ach.name}</div>
+        <div style="font-size:0.65rem;color:rgba(255,255,255,0.5);">${ach.desc}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // 创建或更新成就弹窗
+  let achModal = document.getElementById('achievementsModal');
+  if (!achModal) {
+    achModal = document.createElement('div');
+    achModal.id = 'achievementsModal';
+    achModal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:9999;display:none;align-items:center;justify-content:center;';
+    achModal.onclick = function(e) { if(e.target === this) this.style.display = 'none'; };
+    document.body.appendChild(achModal);
+  }
+
+  achModal.innerHTML = `<div style="background:linear-gradient(135deg,#1a1a2e,#16213e);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:20px;max-width:320px;width:90%;max-height:80vh;overflow-y:auto;">
+    <div style="text-align:center;margin-bottom:16px;">
+      <span style="font-size:2rem;">🏆</span>
+      <div style="font-size:1rem;color:#fff;font-weight:600;margin-top:4px;">成就徽章</div>
+      <div style="font-size:0.7rem;color:rgba(255,255,255,0.5);">${unlocked.length}/${ACHIEVEMENTS.length}</div>
+    </div>
+    ${achHTML}
+    <button onclick="document.getElementById('achievementsModal').style.display='none'" style="width:100%;margin-top:12px;background:rgba(255,255,255,0.1);border:none;border-radius:20px;padding:10px;color:rgba(255,255,255,0.7);cursor:pointer;">关闭</button>
+  </div>`;
+
+  achModal.style.display = 'flex';
+}
+
+// 跟踪成就相关行为
+function trackAchievement(action) {
+  const keyMap = {
+    'random_friend': 'random_friend_views',
+    'theme_change': 'theme_switches',
+    'message': 'has_message'
+  };
+
+  if (keyMap[action]) {
+    const key = keyMap[action];
+    const val = parseInt(localStorage.getItem(key) || '0', 10);
+    localStorage.setItem(key, val + 1);
+  }
+
+  // 延迟检查成就（确保数据已保存）
+  setTimeout(checkAchievements, 500);
 }
 
 // ==================== 随机朋友功能 ====================
@@ -2154,29 +2267,30 @@ function likeSite() {
   localStorage.setItem('has_liked_today', today);
 
   showToast(`谢谢你的喜欢！❤️ 已有 ${newLikes} 人点赞`);
-
+  
   // 点赞特效
   showMessageCelebration();
+  trackAchievement('like');
 }
 
 // ==================== 快速心情投票 ====================
 function quickMood(emoji) {
   const today = new Date().toDateString();
   const saved = localStorage.getItem('quick_mood_date');
-  
+
   if (saved === today) {
     showToast('今天已经投过啦～');
     return;
   }
-  
+
   localStorage.setItem('quick_mood_date', today);
   localStorage.setItem('quick_mood', emoji);
-  
+
   // 记录心情到统计
   const moodStats = JSON.parse(localStorage.getItem('mood_stats') || '{}');
   moodStats[emoji] = (moodStats[emoji] || 0) + 1;
   localStorage.setItem('mood_stats', JSON.stringify(moodStats));
-  
+
   document.getElementById('quickMoodResult').textContent = '你选择了 ' + emoji;
   showToast('心情已记录！');
 }
@@ -2193,16 +2307,16 @@ function saveTimeCapsule() {
     showToast('写点什么吧～');
     return;
   }
-  
+
   const capsules = JSON.parse(localStorage.getItem('time_capsules') || '[]');
   capsules.unshift({
     text: text,
     date: new Date().toISOString()
   });
-  
+
   // 只保留最近10条
   if (capsules.length > 10) capsules.pop();
-  
+
   localStorage.setItem('time_capsules', JSON.stringify(capsules));
   document.getElementById('capsuleText').value = '';
   document.getElementById('timeCapsuleInput').style.display = 'none';
@@ -2221,19 +2335,19 @@ function saveTimeCapsuleMobile() {
     showToast('写点什么吧～');
     return;
   }
-  
+
   const capsules = JSON.parse(localStorage.getItem('time_capsules') || '[]');
   capsules.unshift({
     text: text,
     date: new Date().toISOString()
   });
-  
+
   if (capsules.length > 10) capsules.pop();
   localStorage.setItem('time_capsules', JSON.stringify(capsules));
-  
+
   document.getElementById('capsuleTextM').value = '';
   document.getElementById('capsuleInputM').style.display = 'none';
-  
+
   showToast('胶囊已保存！📦');
   renderCapsuleListM();
 }
@@ -2241,12 +2355,12 @@ function saveTimeCapsuleMobile() {
 function renderCapsuleListM() {
   const capsules = JSON.parse(localStorage.getItem('time_capsules') || '[]');
   const el = document.getElementById('capsuleListM');
-  
+
   if (capsules.length === 0) {
     el.textContent = '暂无胶囊';
     return;
   }
-  
+
   el.innerHTML = capsules.slice(0, 3).map(c => {
     const date = new Date(c.date);
     const dateStr = `${date.getMonth()+1}/${date.getDate()} ${date.getHours()}:${date.getMinutes().toString().padStart(2,'0')}`;
@@ -2273,13 +2387,13 @@ function initDailyQuiz() {
   const today = new Date().toDateString();
   const answered = JSON.parse(localStorage.getItem('daily_quiz_answers') || '[]');
   const quizDate = localStorage.getItem('daily_quiz_date');
-  
+
   // 每天重置
   if (quizDate !== today) {
     localStorage.setItem('daily_quiz_date', today);
     localStorage.setItem('daily_quiz_answers', '[]');
   }
-  
+
   updateQuizStatus();
   showNewQuestion();
 }
@@ -2301,20 +2415,20 @@ function showNewQuestion() {
     }
     return;
   }
-  
+
   // 随机选择一个问题（避免重复）
   const usedIndices = answered.map(a => a.index);
   const availableIndices = DAILY_QUIZZES.map((_, i) => i).filter(i => !usedIndices.includes(i));
   const index = availableIndices[Math.floor(Math.random() * availableIndices.length)];
   const quiz = DAILY_QUIZZES[index];
-  
+
   const qEl = document.getElementById('dailyQuizQuestion');
   const optsEl = document.getElementById('dailyQuizOptions');
   const resultEl = document.getElementById('dailyQuizResult');
-  
+
   if (qEl) qEl.textContent = quiz.q;
   if (optsEl) {
-    optsEl.innerHTML = quiz.a.map((opt, i) => 
+    optsEl.innerHTML = quiz.a.map((opt, i) =>
       `<button onclick="answerQuiz(${index}, ${i})" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:6px 14px;font-size:0.7rem;color:rgba(255,255,255,0.7);cursor:pointer;">${opt}</button>`
     ).join('');
   }
@@ -2324,18 +2438,18 @@ function showNewQuestion() {
 function answerQuiz(quizIndex, answerIndex) {
   const quiz = DAILY_QUIZZES[quizIndex];
   const isCorrect = answerIndex === quiz.correct;
-  
+
   const answered = JSON.parse(localStorage.getItem('daily_quiz_answers') || '[]');
   answered.push({ index: quizIndex, answer: answerIndex, correct: isCorrect });
   localStorage.setItem('daily_quiz_answers', JSON.stringify(answered));
-  
+
   const resultEl = document.getElementById('dailyQuizResult');
   if (resultEl) {
     resultEl.style.display = 'block';
     resultEl.style.color = isCorrect ? '#38ef7d' : '#f093fb';
     resultEl.textContent = isCorrect ? '✅ 回答正确！' : '❌ 再接再厉～';
   }
-  
+
   updateQuizStatus();
   setTimeout(showNewQuestion, 1500);
 }
@@ -2355,17 +2469,17 @@ const FORTUNES = [
 function drawFortune() {
   const resultEl = document.getElementById('fortuneResult');
   const fortune = FORTUNES[Math.floor(Math.random() * FORTUNES.length)];
-  
+
   // 动画效果
   resultEl.style.opacity = '0';
   resultEl.style.transition = 'opacity 0.3s';
-  
+
   setTimeout(() => {
     resultEl.innerHTML = fortune.text;
     resultEl.style.color = fortune.color;
     resultEl.style.opacity = '1';
   }, 150);
-  
+
   showToast('✨ 你的今日运势：' + fortune.text.split('：')[1]);
 }
 
@@ -2598,6 +2712,7 @@ function submitMessage() {
 
   // 留言弹幕庆祝效果
   showMessageCelebration();
+  trackAchievement('message');
 }
 function renderMessages() {
   const isAdmin = adminPanel.classList.contains('active');
@@ -2779,7 +2894,7 @@ function updateBadges() {
   if (msgBadge) msgBadge.textContent = messages.length;
   const fcBadge = document.getElementById('friendShowcaseBadge');
   if (fcBadge) fcBadge.textContent = friends.length;
-  
+
   // 更新站点统计
   const statFriends = document.getElementById('statFriends');
   const statMessages = document.getElementById('statMessages');
@@ -2789,7 +2904,7 @@ function updateBadges() {
   if (statMessages) statMessages.textContent = messages.length;
   if (statLikes) statLikes.textContent = localStorage.getItem('site_likes') || '0';
   if (statVisitors) statVisitors.textContent = localStorage.getItem('visitor_count') || '0';
-  
+
   // 移动端统计
   const statFriendsM = document.getElementById('statFriendsM');
   const statMessagesM = document.getElementById('statMessagesM');
@@ -2901,7 +3016,7 @@ function switchMobileTab(tab) {
   if (tab === 'mood') document.getElementById('mobileMood').classList.add('active');
   if (tab === 'game') document.getElementById('mobileGame').classList.add('active');
   if (tab === 'discover') document.getElementById('mobileDiscover').classList.add('active');
-  
+
   // 首页：内容区显示
   if (tab === 'home' || tab === 'mine') {
     document.getElementById('contentArea').style.display = 'flex';
