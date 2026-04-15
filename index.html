@@ -1073,6 +1073,9 @@
 <div class="bg-deco-text bg-deco-text-1">致</div>
 <div class="bg-deco-text bg-deco-text-2">我们</div>
 
+<!-- 浮动粒子效果 -->
+<div id="particlesContainer"></div>
+
 <!-- 开场帘子 -->
 <div class="curtain" id="curtain" onclick="openCurtain()">
   <div class="curtain-title">🍗 炸鸡腿</div>
@@ -1223,6 +1226,17 @@
           <div class="music-progress-wrap"><div class="music-progress-bar" id="musicProgress"></div></div>
         </div>
         <div class="music-time" id="musicTime">0:00</div>
+      </div>
+
+      <!-- 连续访问天数 -->
+      <div class="card" id="streakCard" style="background:linear-gradient(135deg,rgba(251,191,36,0.2),rgba(245,158,11,0.15));border-color:rgba(251,191,36,0.2);padding:12px 14px;margin-top:10px;display:none;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span style="font-size:1.8rem;">🔥</span>
+          <div>
+            <div style="font-size:0.85rem;color:rgba(255,255,255,0.9);font-weight:600;">连续访问 <span id="streakDays">0</span> 天</div>
+            <div style="font-size:0.65rem;color:rgba(255,255,255,0.5);">今日打卡 +1</div>
+          </div>
+        </div>
       </div>
 
       <!-- 搜索 -->
@@ -1619,6 +1633,12 @@ style.textContent = `
     0% { opacity: 1; transform: translateY(0) scale(1); }
     100% { opacity: 0; transform: translateY(-80px) scale(1.5); }
   }
+  @keyframes floatParticle {
+    0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+    10% { opacity: 0.3; }
+    90% { opacity: 0.3; }
+    100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+  }
 `;
 document.head.appendChild(style);
 
@@ -1860,7 +1880,7 @@ function openCurtain() {
   document.getElementById('curtain').classList.add('hidden');
   setTimeout(() => {
     document.getElementById('mainLayout').style.display = 'flex';
-    showGreeting(); loadData(); showMood(); initAnniversary(); updateAnniversaryLabel(); initWeather(); initVisitorCount(); initTheme(); initDailyQuiz(); renderCapsuleListM();
+    showGreeting(); loadData(); showMood(); initAnniversary(); updateAnniversaryLabel(); initWeather(); initVisitorCount(); initTheme(); initDailyQuiz(); renderCapsuleListM(); initParticles();
   }, 300);
 }
 
@@ -1983,6 +2003,80 @@ async function syncVisitorCount(count) {
   // 尝试从 Gist 获取当前计数并更新
   // 注意：这需要扩展 Gist 数据结构，暂时记录日志
   console.log('访客计数:', count);
+  
+  // 检查并更新连续访问天数
+  initStreak();
+}
+
+function initStreak() {
+  const streakCard = document.getElementById('streakCard');
+  const streakDays = document.getElementById('streakDays');
+  if (!streakCard || !streakDays) return;
+  
+  const today = new Date().toDateString();
+  const lastVisit = localStorage.getItem('last_visit_date');
+  const streak = parseInt(localStorage.getItem('visit_streak') || '0', 10);
+  
+  if (lastVisit === today) {
+    // 今天已经访问过
+    streakDays.textContent = streak;
+    streakCard.style.display = 'block';
+  } else if (lastVisit) {
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    if (lastVisit === yesterday.toDateString()) {
+      // 昨天访问过，连续天数+1
+      const newStreak = streak + 1;
+      localStorage.setItem('visit_streak', newStreak);
+      streakDays.textContent = newStreak;
+    } else {
+      // 中断了，重新开始
+      localStorage.setItem('visit_streak', '1');
+      streakDays.textContent = '1';
+    }
+  } else {
+    // 第一次访问
+    localStorage.setItem('visit_streak', '1');
+    streakDays.textContent = '1';
+  }
+  
+  localStorage.setItem('last_visit_date', today);
+  streakCard.style.display = 'block';
+}
+
+// ==================== 浮动粒子效果 ====================
+function initParticles() {
+  const container = document.getElementById('particlesContainer');
+  if (!container) return;
+  
+  const particleCount = 15;
+  const emojis = ['✨', '💫', '🌟', '💕', '🎵', '🌸', '🍀', '🦋'];
+  
+  for (let i = 0; i < particleCount; i++) {
+    createParticle(container, emojis);
+  }
+}
+
+function createParticle(container, emojis) {
+  const particle = document.createElement('div');
+  particle.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+  particle.style.cssText = `
+    position: fixed;
+    font-size: ${0.8 + Math.random() * 0.8}rem;
+    opacity: ${0.2 + Math.random() * 0.3};
+    pointer-events: none;
+    z-index: 0;
+    left: ${Math.random() * 100}%;
+    top: ${Math.random() * 100}%;
+    animation: floatParticle ${8 + Math.random() * 12}s linear infinite;
+  `;
+  
+  container.appendChild(particle);
+  
+  setTimeout(() => {
+    particle.remove();
+    createParticle(container, emojis);
+  }, (8 + Math.random() * 12) * 1000);
 }
 
 // ==================== 随机朋友功能 ====================
