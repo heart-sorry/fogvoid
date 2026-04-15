@@ -1181,6 +1181,31 @@
         <button onclick="toggleTheme()" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:6px 12px;font-size:0.65rem;color:rgba(255,255,255,0.6);cursor:pointer;">🎨 换肤</button>
         <button onclick="likeSite()" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:6px 12px;font-size:0.65rem;color:rgba(255,255,255,0.6);cursor:pointer;">❤️ 喜欢</button>
       </div>
+      
+      <!-- 今日心情投票 -->
+      <div style="margin-top:16px;padding:10px;background:rgba(255,255,255,0.03);border-radius:12px;border:1px solid rgba(255,255,255,0.06);">
+        <div style="font-size:0.7rem;color:rgba(255,255,255,0.5);margin-bottom:8px;">💭 今天感觉如何？</div>
+        <div style="display:flex;gap:8px;justify-content:center;">
+          <button onclick="quickMood('😊')" style="background:none;border:none;font-size:1.3rem;cursor:pointer;opacity:0.7;transition:0.2s;">😊</button>
+          <button onclick="quickMood('😢')" style="background:none;border:none;font-size:1.3rem;cursor:pointer;opacity:0.7;transition:0.2s;">😢</button>
+          <button onclick="quickMood('😡')" style="background:none;border:none;font-size:1.3rem;cursor:pointer;opacity:0.7;transition:0.2s;">😡</button>
+          <button onclick="quickMood('😴')" style="background:none;border:none;font-size:1.3rem;cursor:pointer;opacity:0.7;transition:0.2s;">😴</button>
+          <button onclick="quickMood('🤔')" style="background:none;border:none;font-size:1.3rem;cursor:pointer;opacity:0.7;transition:0.2s;">🤔</button>
+          <button onclick="quickMood('🥰')" style="background:none;border:none;font-size:1.3rem;cursor:pointer;opacity:0.7;transition:0.2s;">🥰</button>
+        </div>
+        <div id="quickMoodResult" style="font-size:0.65rem;color:rgba(255,255,255,0.3);text-align:center;margin-top:6px;"></div>
+      </div>
+      
+      <!-- 秘密日记胶囊 -->
+      <div style="margin-top:12px;">
+        <button onclick="toggleTimeCapsule()" style="width:100%;background:linear-gradient(135deg,rgba(119,82,254,0.2),rgba(56,239,125,0.15));border:1px solid rgba(119,82,254,0.2);border-radius:12px;padding:10px;color:rgba(255,255,255,0.7);font-size:0.72rem;cursor:pointer;">
+         胶囊 写下今日悄悄话
+        </button>
+        <div id="timeCapsuleInput" style="display:none;margin-top:8px;">
+          <textarea id="capsuleText" placeholder="写给未来的自己..." style="width:100%;background:rgba(0,0,0,0.2);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:8px;color:#fff;font-size:0.75rem;resize:none;height:60px;"></textarea>
+          <button onclick="saveTimeCapsule()" style="margin-top:6px;width:100%;background:rgba(119,82,254,0.3);border:none;border-radius:8px;padding:6px;color:rgba(255,255,255,0.8);font-size:0.7rem;cursor:pointer;">💾 存进胶囊</button>
+        </div>
+      </div>
       <div class="admin-link">
         <button class="admin-link-btn" onclick="promptAdminPassword()">⚙️ 管理</button>
       </div>
@@ -1224,6 +1249,29 @@
         <div class="hitokoto-text" id="hitokotoText">正在加载...</div>
         <div class="hitokoto-from" id="hitokotoFrom"></div>
         <div class="hitokoto-refresh" onclick="fetchHitokoto()" title="换一句">↻</div>
+      </div>
+
+      <!-- 今日问答 -->
+      <div class="card" style="background:linear-gradient(135deg,rgba(255,107,107,0.2),rgba(255,142,83,0.15));border-color:rgba(255,107,107,0.2);padding:12px 14px;margin-top:10px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+          <span style="font-size:0.75rem;color:rgba(255,255,255,0.6);">🎯 今日答题</span>
+          <span id="dailyQuizStatus" style="font-size:0.65rem;color:rgba(255,255,255,0.3);">0/3</span>
+        </div>
+        <div id="dailyQuizQuestion" style="font-size:0.8rem;color:rgba(255,255,255,0.85);margin-bottom:10px;">加载中...</div>
+        <div id="dailyQuizOptions" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+        <div id="dailyQuizResult" style="font-size:0.7rem;margin-top:8px;display:none;"></div>
+      </div>
+
+      <!-- 今日运势 -->
+      <div class="card" style="background:linear-gradient(135deg,rgba(253,121,168,0.2),rgba(162,138,250,0.15));border-color:rgba(253,121,168,0.2);padding:12px 14px;margin-top:10px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+          <span style="font-size:1.2rem;">🔮</span>
+          <span style="font-size:0.75rem;color:rgba(255,255,255,0.6);">今日运势</span>
+        </div>
+        <div id="fortuneResult" style="font-size:0.8rem;color:rgba(255,255,255,0.85);text-align:center;padding:8px;">
+          点击下方按钮抽取今日运势
+        </div>
+        <button onclick="drawFortune()" style="width:100%;margin-top:8px;background:linear-gradient(135deg,rgba(253,121,168,0.3),rgba(162,138,250,0.3));border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:8px;color:rgba(255,255,255,0.8);font-size:0.75rem;cursor:pointer;">✨ 抽一签</button>
       </div>
 
       <!-- 留言板 -->
@@ -1350,18 +1398,45 @@
         </div>
 
         <!-- 站点统计 -->
-        <div style="background:rgba(255,255,255,0.05);border-radius:12px;padding:12px;">
+        <div style="background:rgba(255,255,255,0.05);border-radius:12px;padding:12px;margin-bottom:12px;">
           <div style="color:rgba(255,255,255,0.5);font-size:0.75rem;margin-bottom:8px;">📊 站点统计</div>
           <div style="display:flex;justify-content:space-around;text-align:center;">
             <div>
-              <div id="statFriends" style="font-size:1.2rem;color:#667eea;font-weight:600;">0</div>
+              <div id="statFriendsM" style="font-size:1.2rem;color:#667eea;font-weight:600;">0</div>
               <div style="font-size:0.65rem;color:rgba(255,255,255,0.4);">朋友</div>
             </div>
             <div>
-              <div id="statMessages" style="font-size:1.2rem;color:#f093fb;font-weight:600;">0</div>
+              <div id="statMessagesM" style="font-size:1.2rem;color:#f093fb;font-weight:600;">0</div>
               <div style="font-size:0.65rem;color:rgba(255,255,255,0.4);">留言</div>
             </div>
             <div>
+              <div id="statLikesM" style="font-size:1.2rem;color:#38ef7d;font-weight:600;">0</div>
+              <div style="font-size:0.65rem;color:rgba(255,255,255,0.4);">点赞</div>
+            </div>
+            <div>
+              <div id="statVisitorsM" style="font-size:1.2rem;color:#f8a5c2;font-weight:600;">0</div>
+              <div style="font-size:0.65rem;color:rgba(255,255,255,0.4);">访客</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 今日运势（移动端） -->
+        <div style="background:linear-gradient(135deg,rgba(253,121,168,0.15),rgba(162,138,250,0.1));border-radius:12px;padding:12px;margin-bottom:12px;">
+          <div style="font-size:0.75rem;color:rgba(255,255,255,0.5);margin-bottom:8px;">🔮 今日运势</div>
+          <div id="fortuneResultM" style="font-size:0.75rem;color:rgba(255,255,255,0.7);margin-bottom:8px;">点击抽签~</div>
+          <button onclick="drawFortune()" style="background:linear-gradient(135deg,rgba(253,121,168,0.3),rgba(162,138,250,0.3));border:none;border-radius:20px;padding:6px 16px;font-size:0.7rem;color:rgba(255,255,255,0.8);cursor:pointer;">✨ 抽一签</button>
+        </div>
+        
+        <!-- 时间胶囊（移动端） -->
+        <div style="background:rgba(119,82,254,0.1);border-radius:12px;padding:12px;">
+          <div style="font-size:0.75rem;color:rgba(255,255,255,0.5);margin-bottom:8px;">📦 我的胶囊</div>
+          <div id="capsuleListM" style="font-size:0.7rem;color:rgba(255,255,255,0.4);">暂无胶囊</div>
+          <button onclick="toggleTimeCapsuleMobile()" style="margin-top:8px;background:rgba(119,82,254,0.2);border:none;border-radius:8px;padding:6px 12px;font-size:0.65rem;color:rgba(255,255,255,0.7);cursor:pointer;">➕ 新建胶囊</button>
+          <div id="capsuleInputM" style="display:none;margin-top:8px;">
+            <textarea id="capsuleTextM" placeholder="写给未来的自己..." style="width:100%;background:rgba(0,0,0,0.2);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:8px;color:#fff;font-size:0.7rem;resize:none;height:50px;"></textarea>
+            <button onclick="saveTimeCapsuleMobile()" style="margin-top:4px;background:rgba(119,82,254,0.3);border:none;border-radius:8px;padding:4px 12px;font-size:0.65rem;color:rgba(255,255,255,0.8);cursor:pointer;">💾 保存</button>
+          </div>
+        </div>
               <div id="statLikes" style="font-size:1.2rem;color:#38ef7d;font-weight:600;">0</div>
               <div style="font-size:0.65rem;color:rgba(255,255,255,0.4);">点赞</div>
             </div>
@@ -1785,7 +1860,7 @@ function openCurtain() {
   document.getElementById('curtain').classList.add('hidden');
   setTimeout(() => {
     document.getElementById('mainLayout').style.display = 'flex';
-    showGreeting(); loadData(); showMood(); initAnniversary(); updateAnniversaryLabel(); initWeather(); initVisitorCount(); initTheme();
+    showGreeting(); loadData(); showMood(); initAnniversary(); updateAnniversaryLabel(); initWeather(); initVisitorCount(); initTheme(); initDailyQuiz(); renderCapsuleListM();
   }, 300);
 }
 
@@ -1988,6 +2063,216 @@ function likeSite() {
 
   // 点赞特效
   showMessageCelebration();
+}
+
+// ==================== 快速心情投票 ====================
+function quickMood(emoji) {
+  const today = new Date().toDateString();
+  const saved = localStorage.getItem('quick_mood_date');
+  
+  if (saved === today) {
+    showToast('今天已经投过啦～');
+    return;
+  }
+  
+  localStorage.setItem('quick_mood_date', today);
+  localStorage.setItem('quick_mood', emoji);
+  
+  // 记录心情到统计
+  const moodStats = JSON.parse(localStorage.getItem('mood_stats') || '{}');
+  moodStats[emoji] = (moodStats[emoji] || 0) + 1;
+  localStorage.setItem('mood_stats', JSON.stringify(moodStats));
+  
+  document.getElementById('quickMoodResult').textContent = '你选择了 ' + emoji;
+  showToast('心情已记录！');
+}
+
+// ==================== 时间胶囊 ====================
+function toggleTimeCapsule() {
+  const el = document.getElementById('timeCapsuleInput');
+  el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+
+function saveTimeCapsule() {
+  const text = document.getElementById('capsuleText').value.trim();
+  if (!text) {
+    showToast('写点什么吧～');
+    return;
+  }
+  
+  const capsules = JSON.parse(localStorage.getItem('time_capsules') || '[]');
+  capsules.unshift({
+    text: text,
+    date: new Date().toISOString()
+  });
+  
+  // 只保留最近10条
+  if (capsules.length > 10) capsules.pop();
+  
+  localStorage.setItem('time_capsules', JSON.stringify(capsules));
+  document.getElementById('capsuleText').value = '';
+  document.getElementById('timeCapsuleInput').style.display = 'none';
+  showToast('胶囊已保存！📦');
+  renderCapsuleListM();
+}
+
+function toggleTimeCapsuleMobile() {
+  const el = document.getElementById('capsuleInputM');
+  el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+
+function saveTimeCapsuleMobile() {
+  const text = document.getElementById('capsuleTextM').value.trim();
+  if (!text) {
+    showToast('写点什么吧～');
+    return;
+  }
+  
+  const capsules = JSON.parse(localStorage.getItem('time_capsules') || '[]');
+  capsules.unshift({
+    text: text,
+    date: new Date().toISOString()
+  });
+  
+  if (capsules.length > 10) capsules.pop();
+  localStorage.setItem('time_capsules', JSON.stringify(capsules));
+  
+  document.getElementById('capsuleTextM').value = '';
+  document.getElementById('capsuleInputM').style.display = 'none';
+  
+  showToast('胶囊已保存！📦');
+  renderCapsuleListM();
+}
+
+function renderCapsuleListM() {
+  const capsules = JSON.parse(localStorage.getItem('time_capsules') || '[]');
+  const el = document.getElementById('capsuleListM');
+  
+  if (capsules.length === 0) {
+    el.textContent = '暂无胶囊';
+    return;
+  }
+  
+  el.innerHTML = capsules.slice(0, 3).map(c => {
+    const date = new Date(c.date);
+    const dateStr = `${date.getMonth()+1}/${date.getDate()} ${date.getHours()}:${date.getMinutes().toString().padStart(2,'0')}`;
+    return `<div style="padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.05);">
+      <div style="color:rgba(255,255,255,0.6);">${c.text.substring(0, 20)}${c.text.length > 20 ? '...' : ''}</div>
+      <div style="font-size:0.6rem;color:rgba(255,255,255,0.3);">${dateStr}</div>
+    </div>`;
+  }).join('');
+}
+
+// ==================== 每日答题 ====================
+const DAILY_QUIZZES = [
+  { q: '今天天气怎么样？', a: ['晴天', '雨天', '阴天'], correct: 0 },
+  { q: '早餐吃了什么？', a: ['面包', '粥', '牛奶'], correct: 0 },
+  { q: '今天最开心的事？', a: ['和朋友聊天', '完成工作', '吃到美食'], correct: 0 },
+  { q: '今天运动了吗？', a: ['有', '没有'], correct: 0 },
+  { q: '睡前会看书吗？', a: ['会', '不会'], correct: 0 },
+  { q: '更喜欢哪种天气？', a: ['晴天', '雨天', '雪天'], correct: 0 },
+  { q: '今天喝水够多吗？', a: ['够了', '不够'], correct: 0 },
+  { q: '今天睡得好吗？', a: ['好', '一般', '不好'], correct: 0 }
+];
+
+function initDailyQuiz() {
+  const today = new Date().toDateString();
+  const answered = JSON.parse(localStorage.getItem('daily_quiz_answers') || '[]');
+  const quizDate = localStorage.getItem('daily_quiz_date');
+  
+  // 每天重置
+  if (quizDate !== today) {
+    localStorage.setItem('daily_quiz_date', today);
+    localStorage.setItem('daily_quiz_answers', '[]');
+  }
+  
+  updateQuizStatus();
+  showNewQuestion();
+}
+
+function updateQuizStatus() {
+  const answered = JSON.parse(localStorage.getItem('daily_quiz_answers') || '[]');
+  const statusEl = document.getElementById('dailyQuizStatus');
+  if (statusEl) statusEl.textContent = answered.length + '/3';
+}
+
+function showNewQuestion() {
+  const answered = JSON.parse(localStorage.getItem('daily_quiz_answers') || '[]');
+  if (answered.length >= 3) {
+    const resultEl = document.getElementById('dailyQuizResult');
+    if (resultEl) {
+      resultEl.style.display = 'block';
+      resultEl.style.color = '#38ef7d';
+      resultEl.textContent = '🎉 今日答题已完成！';
+    }
+    return;
+  }
+  
+  // 随机选择一个问题（避免重复）
+  const usedIndices = answered.map(a => a.index);
+  const availableIndices = DAILY_QUIZZES.map((_, i) => i).filter(i => !usedIndices.includes(i));
+  const index = availableIndices[Math.floor(Math.random() * availableIndices.length)];
+  const quiz = DAILY_QUIZZES[index];
+  
+  const qEl = document.getElementById('dailyQuizQuestion');
+  const optsEl = document.getElementById('dailyQuizOptions');
+  const resultEl = document.getElementById('dailyQuizResult');
+  
+  if (qEl) qEl.textContent = quiz.q;
+  if (optsEl) {
+    optsEl.innerHTML = quiz.a.map((opt, i) => 
+      `<button onclick="answerQuiz(${index}, ${i})" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:6px 14px;font-size:0.7rem;color:rgba(255,255,255,0.7);cursor:pointer;">${opt}</button>`
+    ).join('');
+  }
+  if (resultEl) resultEl.style.display = 'none';
+}
+
+function answerQuiz(quizIndex, answerIndex) {
+  const quiz = DAILY_QUIZZES[quizIndex];
+  const isCorrect = answerIndex === quiz.correct;
+  
+  const answered = JSON.parse(localStorage.getItem('daily_quiz_answers') || '[]');
+  answered.push({ index: quizIndex, answer: answerIndex, correct: isCorrect });
+  localStorage.setItem('daily_quiz_answers', JSON.stringify(answered));
+  
+  const resultEl = document.getElementById('dailyQuizResult');
+  if (resultEl) {
+    resultEl.style.display = 'block';
+    resultEl.style.color = isCorrect ? '#38ef7d' : '#f093fb';
+    resultEl.textContent = isCorrect ? '✅ 回答正确！' : '❌ 再接再厉～';
+  }
+  
+  updateQuizStatus();
+  setTimeout(showNewQuestion, 1500);
+}
+
+// ==================== 今日运势 ====================
+const FORTUNES = [
+  { text: '💫 今日运势：超棒！做任何事都顺顺利利~', color: '#667eea' },
+  { text: '🌟 今日运势：不错哦，保持好心情~', color: '#f093fb' },
+  { text: '✨ 今日运势：一般般，但也要乐观面对~', color: '#38ef7d' },
+  { text: '💕 今日运势：爱情运爆棚！', color: '#f8a5c2' },
+  { text: '📚 今日运势：学习运不错~', color: '#a78bfa' },
+  { text: '💰 今日运势：财运小旺~', color: '#fbbf24' },
+  { text: '🏃 今日运势：运动运很好，动起来~', color: '#34d399' },
+  { text: '🎮 今日运势：游戏连赢！', color: '#f472b6' }
+];
+
+function drawFortune() {
+  const resultEl = document.getElementById('fortuneResult');
+  const fortune = FORTUNES[Math.floor(Math.random() * FORTUNES.length)];
+  
+  // 动画效果
+  resultEl.style.opacity = '0';
+  resultEl.style.transition = 'opacity 0.3s';
+  
+  setTimeout(() => {
+    resultEl.innerHTML = fortune.text;
+    resultEl.style.color = fortune.color;
+    resultEl.style.opacity = '1';
+  }, 150);
+  
+  showToast('✨ 你的今日运势：' + fortune.text.split('：')[1]);
 }
 
 // ==================== 搜索 ====================
@@ -2410,6 +2695,16 @@ function updateBadges() {
   if (statMessages) statMessages.textContent = messages.length;
   if (statLikes) statLikes.textContent = localStorage.getItem('site_likes') || '0';
   if (statVisitors) statVisitors.textContent = localStorage.getItem('visitor_count') || '0';
+  
+  // 移动端统计
+  const statFriendsM = document.getElementById('statFriendsM');
+  const statMessagesM = document.getElementById('statMessagesM');
+  const statLikesM = document.getElementById('statLikesM');
+  const statVisitorsM = document.getElementById('statVisitorsM');
+  if (statFriendsM) statFriendsM.textContent = friends.length;
+  if (statMessagesM) statMessagesM.textContent = messages.length;
+  if (statLikesM) statLikesM.textContent = localStorage.getItem('site_likes') || '0';
+  if (statVisitorsM) statVisitorsM.textContent = localStorage.getItem('visitor_count') || '0';
 }
 
 // ==================== 管理后台 ====================
