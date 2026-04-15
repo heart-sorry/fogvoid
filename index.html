@@ -1174,6 +1174,13 @@
       <div style="font-size:0.6rem;color:rgba(255,255,255,0.15);text-align:center;margin-top:8px;letter-spacing:0.05em">
         始于 2025 · 炸鸡腿 · 访客 <span id="visitorCount">--</span>
       </div>
+
+      <!-- 快捷操作按钮 -->
+      <div style="display:flex;gap:6px;margin-top:12px;flex-wrap:wrap;justify-content:center;">
+        <button onclick="showRandomFriend()" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:6px 12px;font-size:0.65rem;color:rgba(255,255,255,0.6);cursor:pointer;">🎲 随机朋友</button>
+        <button onclick="toggleTheme()" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:6px 12px;font-size:0.65rem;color:rgba(255,255,255,0.6);cursor:pointer;">🎨 换肤</button>
+        <button onclick="likeSite()" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:6px 12px;font-size:0.65rem;color:rgba(255,255,255,0.6);cursor:pointer;">❤️ 喜欢</button>
+      </div>
       <div class="admin-link">
         <button class="admin-link-btn" onclick="promptAdminPassword()">⚙️ 管理</button>
       </div>
@@ -1317,6 +1324,56 @@
       </div>
     </div>
 
+    <!-- 移动端发现面板 -->
+    <div class="mobile-panel" id="mobileDiscover">
+      <div style="padding:16px;">
+        <div style="color:rgba(255,255,255,0.8);font-size:0.9rem;margin-bottom:12px;">🔍 发现更多</div>
+
+        <!-- 快速操作 -->
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px;">
+          <button onclick="showRandomFriend()" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:14px 10px;text-align:center;cursor:pointer;">
+            <div style="font-size:1.5rem;">🎲</div>
+            <div style="font-size:0.7rem;color:rgba(255,255,255,0.6);margin-top:4px;">随机朋友</div>
+          </button>
+          <button onclick="toggleTheme()" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:14px 10px;text-align:center;cursor:pointer;">
+            <div style="font-size:1.5rem;">🎨</div>
+            <div style="font-size:0.7rem;color:rgba(255,255,255,0.6);margin-top:4px;">换肤</div>
+          </button>
+          <button onclick="likeSite()" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:14px 10px;text-align:center;cursor:pointer;">
+            <div style="font-size:1.5rem;">❤️</div>
+            <div style="font-size:0.7rem;color:rgba(255,255,255,0.6);margin-top:4px;">喜欢</div>
+          </button>
+          <button onclick="startQuiz()" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:14px 10px;text-align:center;cursor:pointer;">
+            <div style="font-size:1.5rem;">🧠</div>
+            <div style="font-size:0.7rem;color:rgba(255,255,255,0.6);margin-top:4px;">MBTI</div>
+          </button>
+        </div>
+
+        <!-- 站点统计 -->
+        <div style="background:rgba(255,255,255,0.05);border-radius:12px;padding:12px;">
+          <div style="color:rgba(255,255,255,0.5);font-size:0.75rem;margin-bottom:8px;">📊 站点统计</div>
+          <div style="display:flex;justify-content:space-around;text-align:center;">
+            <div>
+              <div id="statFriends" style="font-size:1.2rem;color:#667eea;font-weight:600;">0</div>
+              <div style="font-size:0.65rem;color:rgba(255,255,255,0.4);">朋友</div>
+            </div>
+            <div>
+              <div id="statMessages" style="font-size:1.2rem;color:#f093fb;font-weight:600;">0</div>
+              <div style="font-size:0.65rem;color:rgba(255,255,255,0.4);">留言</div>
+            </div>
+            <div>
+              <div id="statLikes" style="font-size:1.2rem;color:#38ef7d;font-weight:600;">0</div>
+              <div style="font-size:0.65rem;color:rgba(255,255,255,0.4);">点赞</div>
+            </div>
+            <div>
+              <div id="statVisitors" style="font-size:1.2rem;color:#f8a5c2;font-weight:600;">0</div>
+              <div style="font-size:0.65rem;color:rgba(255,255,255,0.4);">访客</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div><!-- end main-area -->
 
   <!-- 移动端底部导航 -->
@@ -1333,6 +1390,9 @@
       </button>
       <button class="bottom-nav-item" onclick="switchMobileTab('game')" id="navGame">
         <div class="nav-icon">🦖</div>游戏
+      </button>
+      <button class="bottom-nav-item" onclick="switchMobileTab('discover')" id="navDiscover">
+        <div class="nav-icon">🔍</div>发现
       </button>
     </div>
   </div>
@@ -1453,6 +1513,39 @@ function showToast(msg) {
   t.textContent = msg; t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2500);
 }
+
+// ==================== 留言弹幕庆祝 ====================
+function showMessageCelebration() {
+  const colors = ['#667eea', '#f093fb', '#38ef7d', '#f8a5c2', '#a78bfa'];
+  for (let i = 0; i < 12; i++) {
+    setTimeout(() => {
+      const el = document.createElement('div');
+      el.textContent = ['💖', '🎉', '✨', '💕', '🌟'][Math.floor(Math.random() * 5)];
+      el.style.cssText = `
+        position: fixed;
+        left: ${50 + (Math.random() - 0.5) * 30}%;
+        top: 60%;
+        font-size: ${1 + Math.random()}rem;
+        color: ${colors[Math.floor(Math.random() * colors.length)]};
+        pointer-events: none;
+        z-index: 9999;
+        animation: floatUp ${1 + Math.random()}s ease-out forwards;
+      `;
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 2000);
+    }, i * 80);
+  }
+}
+
+// 添加弹幕动画样式
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes floatUp {
+    0% { opacity: 1; transform: translateY(0) scale(1); }
+    100% { opacity: 0; transform: translateY(-80px) scale(1.5); }
+  }
+`;
+document.head.appendChild(style);
 
 // ==================== 时段问候语 ====================
 // ====== 增强：时钟显示 ======
@@ -1692,7 +1785,7 @@ function openCurtain() {
   document.getElementById('curtain').classList.add('hidden');
   setTimeout(() => {
     document.getElementById('mainLayout').style.display = 'flex';
-    showGreeting(); loadData(); showMood(); initAnniversary(); updateAnniversaryLabel(); initWeather(); initVisitorCount();
+    showGreeting(); loadData(); showMood(); initAnniversary(); updateAnniversaryLabel(); initWeather(); initVisitorCount(); initTheme();
   }, 300);
 }
 
@@ -1717,28 +1810,28 @@ function toggleMusic() {
 function initAnniversary() {
   const today = new Date();
   today.setHours(0,0,0,0);
-  
+
   // 找到下一个即将到来的纪念日
   let nextAnniv = null;
   let nextDiff = Infinity;
-  
+
   ANNIVERSARIES.forEach(a => {
     const target = new Date(a.date);
     target.setHours(0,0,0,0);
     let diff = Math.floor((target - today) / 86400000);
-    
+
     // 如果已过，调整到下一年
     if (diff < 0) {
       target.setFullYear(target.getFullYear() + 1);
       diff = Math.floor((target - today) / 86400000);
     }
-    
+
     if (diff < nextDiff) {
       nextDiff = diff;
       nextAnniv = { ...a, target, diff };
     }
   });
-  
+
   if (nextAnniv) {
     const icon = nextAnniv.type === 'love' ? '💕' : (nextAnniv.type === 'meet' ? '✨' : '🎯');
     document.getElementById('countdown').textContent = nextAnniv.diff;
@@ -1770,23 +1863,23 @@ function updateAnniversaryLabel() {
 async function initWeather() {
   const card = document.getElementById('weatherCard');
   if (!card) return;
-  
+
   try {
     const res = await fetch('https://wttr.in/?format=j1');
     const data = await res.json();
-    
+
     const current = data.current_condition[0];
     const temp = current.temp_C;
     const weatherCode = current.weatherCode;
     const city = data.nearest_area[0]?.areaName[0]?.value || '未知';
-    
+
     // 天气图标映射
     const iconMap = {
       '113': '☀️', '116': '⛅', '119': '☁️', '122': '🌧️',
       '200': '⛈️', '389': '🌧️', '386': '🌧️'
     };
     const icon = iconMap[weatherCode] || '🌤️';
-    
+
     document.getElementById('weatherIcon').textContent = icon;
     document.getElementById('weatherTemp').textContent = temp + '°C';
     document.getElementById('weatherCity').textContent = city;
@@ -1800,13 +1893,13 @@ async function initWeather() {
 function initVisitorCount() {
   const el = document.getElementById('visitorCount');
   if (!el) return;
-  
+
   // 从本地读取计数器
   let count = parseInt(localStorage.getItem('visitor_count') || '0', 10);
   count++;
   localStorage.setItem('visitor_count', count);
   el.textContent = count;
-  
+
   // 异步尝试云端同步（需要扩展 Gist 结构）
   syncVisitorCount(count);
 }
@@ -1815,6 +1908,86 @@ async function syncVisitorCount(count) {
   // 尝试从 Gist 获取当前计数并更新
   // 注意：这需要扩展 Gist 数据结构，暂时记录日志
   console.log('访客计数:', count);
+}
+
+// ==================== 随机朋友功能 ====================
+function showRandomFriend() {
+  if (friends.length === 0) {
+    showToast('还没有朋友哦～');
+    return;
+  }
+  const randomIndex = Math.floor(Math.random() * friends.length);
+  openModal(randomIndex);
+}
+
+// ==================== 主题切换 ====================
+const THEMES = [
+  { name: '默认紫', bg: '#1a1a2e', accent: '#667eea', name: 'original' },
+  { name: '夜空蓝', bg: '#0f2027', accent: '#2c5364', name: 'night' },
+  { name: '暮光橙', bg: '#232526', accent: '#414345', name: 'twilight' },
+  { name: '森林绿', bg: '#134e5e', accent: '#71b280', name: 'forest' },
+  { name: '樱花粉', bg: '#2b1055', accent: '#7597de', name: 'sakura' }
+];
+
+let currentThemeIndex = 0;
+
+function toggleTheme() {
+  currentThemeIndex = (currentThemeIndex + 1) % THEMES.length;
+  applyTheme(currentThemeIndex);
+  localStorage.setItem('theme_index', currentThemeIndex);
+  showToast('已切换: ' + THEMES[currentThemeIndex].name);
+}
+
+function applyTheme(index) {
+  const theme = THEMES[index];
+  document.documentElement.style.setProperty('--theme-bg', theme.bg);
+  document.documentElement.style.setProperty('--theme-accent', theme.accent);
+  // 动态调整背景
+  const bgEl = document.querySelector('.bg-all');
+  if (bgEl) {
+    bgEl.style.background = `
+      radial-gradient(ellipse at 15% 50%, ${theme.accent}30 0%, transparent 55%),
+      radial-gradient(ellipse at 85% 20%, rgba(255,100,130,0.12) 0%, transparent 50%),
+      linear-gradient(160deg, ${theme.bg} 0%, ${adjustColor(theme.bg, 20)} 50%, ${adjustColor(theme.bg, -20)} 100%)
+    `;
+  }
+}
+
+function adjustColor(hex, amount) {
+  const num = parseInt(hex.replace('#', ''), 16);
+  const r = Math.min(255, Math.max(0, (num >> 16) + amount));
+  const g = Math.min(255, Math.max(0, ((num >> 8) & 0x00FF) + amount));
+  const b = Math.min(255, Math.max(0, (num & 0x0000FF) + amount));
+  return '#' + (1 << 24 | r << 16 | g << 8 | b).toString(16).slice(1);
+}
+
+function initTheme() {
+  const saved = localStorage.getItem('theme_index');
+  if (saved) {
+    currentThemeIndex = parseInt(saved, 10);
+    applyTheme(currentThemeIndex);
+  }
+}
+
+// ==================== 喜欢/点赞功能 ====================
+function likeSite() {
+  const likes = parseInt(localStorage.getItem('site_likes') || '0', 10);
+  const hasLiked = localStorage.getItem('has_liked_today');
+  const today = new Date().toDateString();
+
+  if (hasLiked === today) {
+    showToast('今天已经点过赞啦～明天再来 💕');
+    return;
+  }
+
+  const newLikes = likes + 1;
+  localStorage.setItem('site_likes', newLikes);
+  localStorage.setItem('has_liked_today', today);
+
+  showToast(`谢谢你的喜欢！❤️ 已有 ${newLikes} 人点赞`);
+
+  // 点赞特效
+  showMessageCelebration();
 }
 
 // ==================== 搜索 ====================
@@ -2043,6 +2216,9 @@ function submitMessage() {
   document.getElementById('msgName').value = '';
   document.getElementById('msgText').value = '';
   showToast('留言成功！💕');
+
+  // 留言弹幕庆祝效果
+  showMessageCelebration();
 }
 function renderMessages() {
   const isAdmin = adminPanel.classList.contains('active');
@@ -2224,6 +2400,16 @@ function updateBadges() {
   if (msgBadge) msgBadge.textContent = messages.length;
   const fcBadge = document.getElementById('friendShowcaseBadge');
   if (fcBadge) fcBadge.textContent = friends.length;
+  
+  // 更新站点统计
+  const statFriends = document.getElementById('statFriends');
+  const statMessages = document.getElementById('statMessages');
+  const statLikes = document.getElementById('statLikes');
+  const statVisitors = document.getElementById('statVisitors');
+  if (statFriends) statFriends.textContent = friends.length;
+  if (statMessages) statMessages.textContent = messages.length;
+  if (statLikes) statLikes.textContent = localStorage.getItem('site_likes') || '0';
+  if (statVisitors) statVisitors.textContent = localStorage.getItem('visitor_count') || '0';
 }
 
 // ==================== 管理后台 ====================
@@ -2325,7 +2511,8 @@ function switchMobileTab(tab) {
   if (tab === 'anniversary') document.getElementById('mobileAnniversary').classList.add('active');
   if (tab === 'mood') document.getElementById('mobileMood').classList.add('active');
   if (tab === 'game') document.getElementById('mobileGame').classList.add('active');
-
+  if (tab === 'discover') document.getElementById('mobileDiscover').classList.add('active');
+  
   // 首页：内容区显示
   if (tab === 'home' || tab === 'mine') {
     document.getElementById('contentArea').style.display = 'flex';
