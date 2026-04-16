@@ -1140,6 +1140,12 @@
         <div id="greetingBar" style="font-size:0.82rem; color:rgba(255,255,255,0.75); line-height:1.5"></div>
       </div>
 
+      <!-- 日记入口（侧边栏顶部显眼位置） -->
+      <div class="card" onclick="openDiary()" style="cursor:pointer;background:linear-gradient(135deg,rgba(240,147,251,0.15),rgba(245,87,108,0.15));border:1px solid rgba(240,147,251,0.2);" title="写日记">
+        <div class="card-label">📖 写日记</div>
+        <div id="diaryCount" style="font-size:0.75rem;color:rgba(255,255,255,0.5);margin-top:4px;">点击写日记</div>
+      </div>
+
       <!-- 天气小部件 -->
       <div class="card" id="weatherCard" style="padding: 10px 14px; display: none;">
         <div class="card-label">🌤️ 今日天气</div>
@@ -1156,11 +1162,6 @@
         <div class="mood-choices" id="moodChoices"></div>
         <div class="mood-today" id="moodToday"></div>
         <div class="mood-history" id="moodHistory"></div>
-      </div>
-
-      <div class="card" onclick="openDiary()" style="cursor:pointer;" title="写日记">
-        <div class="card-label">📖 日记</div>
-        <div id="diaryCount" style="font-size:0.75rem;color:rgba(255,255,255,0.5);margin-top:4px;">点击写日记</div>
       </div>
 
       <!-- 纪念日（侧边栏） -->
