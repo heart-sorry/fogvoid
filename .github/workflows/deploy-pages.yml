@@ -23,24 +23,42 @@ jobs:
         run: |
           if [ -z "$GIST_TOKEN" ]; then
             echo "::warning::GIST_TOKEN secret is empty or not set"
-            echo "Checking if const GIST_TOKEN line exists..."
-            grep -n "const GIST_TOKEN" index.html || echo "NOT FOUND"
           else
             echo "Token found, length: ${#GIST_TOKEN}"
             sed -i "s/const GIST_TOKEN = ''/const GIST_TOKEN = '$GIST_TOKEN'/" index.html
-            echo "After injection:"
-            grep "const GIST_TOKEN" index.html | cut -c1-40
           fi
         env:
           GIST_TOKEN: ${{ secrets.GIST_TOKEN }}
 
+      - name: Debug checkout
+        run: |
+          echo "=== Files in repo ==="
+          ls -la
+          echo "=== index.html first 3 lines ==="
+          head -3 index.html || echo "No index.html!"
+          echo "=== File sizes ==="
+          find . -type f -exec ls -la {} \; | head -20
+
       - name: Setup Pages
+        id: pages-setup
         uses: actions/configure-pages@v4
 
+      - name: Debug Pages Setup
+        run: |
+          echo "Pages URL: ${{ steps.pages-setup.outputs.pages_url }}"
+          echo "Pages Domain: ${{ steps.pages-setup.outputs.pages_domain }}"
+
       - name: Upload artifact
+        id: upload
         uses: actions/upload-pages-artifact@v3
         with:
           path: '.'
+
+      - name: Debug artifact
+        run: |
+          echo "Upload output: ${{ steps.upload.outputs.artifact_id }}"
+          echo "Upload name: ${{ steps.upload.outputs.artifact_name }}"
+          echo "Upload path: ${{ steps.upload.outputs.artifact_path }}"
 
       - name: Deploy to GitHub Pages
         id: deployment
