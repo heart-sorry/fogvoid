@@ -2070,6 +2070,14 @@ function toggleMusic() {
 
 // ==================== 纪念日 ====================
 function initAnniversary() {
+  // 合并静态纪念日数组 + 管理面板配置
+  const allAnnivs = [...ANNIVERSARIES];
+  const cfgName = localStorage.getItem('anniversary_name');
+  const cfgDate = localStorage.getItem('anniversary_date');
+  if (cfgName && cfgDate) {
+    allAnnivs.push({ name: cfgName, date: cfgDate, type: 'custom' });
+  }
+
   const today = new Date();
   today.setHours(0,0,0,0);
 
@@ -2077,7 +2085,7 @@ function initAnniversary() {
   let nextAnniv = null;
   let nextDiff = Infinity;
 
-  ANNIVERSARIES.forEach(a => {
+  allAnnivs.forEach(a => {
     const target = new Date(a.date);
     target.setHours(0,0,0,0);
     let diff = Math.floor((target - today) / 86400000);
@@ -2127,17 +2135,8 @@ async function initWeather() {
   if (!card) return;
 
   try {
-    // 读取配置的城市，优先 weather_city，支持湛江等国内城市
-    const configuredCity = localStorage.getItem('weather_city') || localStorage.getItem('default_city') || '';
-    // wttr.in 支持城市名直接查询，中文城市可用拼音
-    const cityMap = {
-      '101301601': 'Zhanjiang',
-      '101280601': 'Shenzhen',
-      '101280500': 'Guangzhou'
-    };
-    const queryCity = configuredCity && cityMap[configuredCity] ? cityMap[configuredCity] : '';
-    const url = queryCity ? `https://wttr.in/${queryCity}?format=j1` : 'https://wttr.in/?format=j1';
-    const res = await fetch(url);
+    // wttr.in 自动按 IP 定位
+    const res = await fetch('https://wttr.in/?format=j1');
     const data = await res.json();
 
     const current = data.current_condition[0];
@@ -2154,16 +2153,9 @@ async function initWeather() {
     };
     const icon = iconMap[weatherCode] || '🌤️';
 
-    const cityNameMap = {
-      'Zhanjiang': '湛江',
-      'Shenzhen': '深圳',
-      'Guangzhou': '广州'
-    };
-    const displayCity = cityNameMap[area?.areaName?.[0]?.value] || city;
-
     document.getElementById('weatherIcon').textContent = icon;
     document.getElementById('weatherTemp').textContent = temp + '°C';
-    document.getElementById('weatherCity').textContent = displayCity;
+    document.getElementById('weatherCity').textContent = city;
     card.style.display = 'block';
   } catch (e) {
     console.log('天气获取失败:', e);
@@ -3441,12 +3433,9 @@ function loadSiteSettings() {
   if (annivName) localStorage.setItem('anniversary_name', annivName);
   if (annivDate) localStorage.setItem('anniversary_date', annivDate);
 
-  // 天气设置（预设湛江，兼容旧 key）
-  const weatherCity = localStorage.getItem('default_city') || localStorage.getItem('weather_city') || '';
-  if (!weatherCity) {
-    localStorage.setItem('weather_city', '101301601'); // 湛江城市代码
-    localStorage.setItem('default_city', '101301601');
-  } else {
+  // 天气设置（wttr.in 按 IP 定位，配置仅备用）
+  const weatherCity = localStorage.getItem('weather_city') || localStorage.getItem('default_city');
+  if (weatherCity) {
     localStorage.setItem('weather_city', weatherCity);
     localStorage.setItem('default_city', weatherCity);
   }
@@ -3485,7 +3474,7 @@ function switchMobileTab(tab) {
   document.querySelectorAll('.mobile-panel').forEach(p => p.classList.remove('active'));
   if (tab === 'anniversary') document.getElementById('mobileAnniversary').classList.add('active');
   if (tab === 'mood') document.getElementById('mobileMood').classList.add('active');
-  if (tab === 'diary') { document.getElementById('mobileDiary').classList.add('active'); renderDiaryList(); }
+  if (tab === 'diary') { document.getElementById('mobileDiary').classList.add('active'); renderDiaryList(); renderMobileDiaryList(); }
   if (tab === 'discover') document.getElementById('mobileDiscover').classList.add('active');
 
   // 首页：内容区显示
@@ -3577,7 +3566,8 @@ function saveAnniversaryConfig() {
   const date = document.getElementById('adminAnnivDate').value;
   localStorage.setItem('anniversary_name', name);
   localStorage.setItem('anniversary_date', date);
-  showToast('纪念日设置已保存，将在下一次访问时生效');
+  showToast('纪念日设置已保存，立即生效');
+  initAnniversary(); updateAnniversaryLabel();
   setTimeout(() => autoSync(), 500);
 }
 
