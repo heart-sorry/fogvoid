@@ -2127,24 +2127,43 @@ async function initWeather() {
   if (!card) return;
 
   try {
-    const res = await fetch('https://wttr.in/?format=j1');
+    // 读取配置的城市，优先 weather_city，支持湛江等国内城市
+    const configuredCity = localStorage.getItem('weather_city') || localStorage.getItem('default_city') || '';
+    // wttr.in 支持城市名直接查询，中文城市可用拼音
+    const cityMap = {
+      '101301601': 'Zhanjiang',
+      '101280601': 'Shenzhen',
+      '101280500': 'Guangzhou'
+    };
+    const queryCity = configuredCity && cityMap[configuredCity] ? cityMap[configuredCity] : '';
+    const url = queryCity ? `https://wttr.in/${queryCity}?format=j1` : 'https://wttr.in/?format=j1';
+    const res = await fetch(url);
     const data = await res.json();
 
     const current = data.current_condition[0];
     const temp = current.temp_C;
     const weatherCode = current.weatherCode;
-    const city = data.nearest_area[0]?.areaName[0]?.value || '未知';
+    const area = data.nearest_area && data.nearest_area[0];
+    const city = area ? (area.areaName?.[0]?.value || area.region?.[0]?.value || '未知') : '未知';
 
     // 天气图标映射
     const iconMap = {
       '113': '☀️', '116': '⛅', '119': '☁️', '122': '🌧️',
-      '200': '⛈️', '389': '🌧️', '386': '🌧️'
+      '200': '⛈️', '389': '🌧️', '386': '🌧️',
+      '176': '🌤️', '353': '🌧️', '362': '🌨️', '371': '❄️'
     };
     const icon = iconMap[weatherCode] || '🌤️';
 
+    const cityNameMap = {
+      'Zhanjiang': '湛江',
+      'Shenzhen': '深圳',
+      'Guangzhou': '广州'
+    };
+    const displayCity = cityNameMap[area?.areaName?.[0]?.value] || city;
+
     document.getElementById('weatherIcon').textContent = icon;
     document.getElementById('weatherTemp').textContent = temp + '°C';
-    document.getElementById('weatherCity').textContent = city;
+    document.getElementById('weatherCity').textContent = displayCity;
     card.style.display = 'block';
   } catch (e) {
     console.log('天气获取失败:', e);
@@ -3416,17 +3435,19 @@ function loadSiteSettings() {
     }
   }
   
-  // 纪念日设置
-  const annivName = localStorage.getItem('anniv_name');
-  const annivDate = localStorage.getItem('anniv_date');
-  if (annivName && annivDate) {
-    localStorage.setItem('anniversary_name', annivName);
-    localStorage.setItem('anniversary_date', annivDate);
-  }
-  
-  // 天气设置
-  const weatherCity = localStorage.getItem('weather_city');
-  if (weatherCity) {
+  // 纪念日设置（读取并同步到 anniversary_* keys）
+  const annivName = localStorage.getItem('anniversary_name') || localStorage.getItem('anniv_name');
+  const annivDate = localStorage.getItem('anniversary_date') || localStorage.getItem('anniv_date');
+  if (annivName) localStorage.setItem('anniversary_name', annivName);
+  if (annivDate) localStorage.setItem('anniversary_date', annivDate);
+
+  // 天气设置（预设湛江，兼容旧 key）
+  const weatherCity = localStorage.getItem('default_city') || localStorage.getItem('weather_city') || '';
+  if (!weatherCity) {
+    localStorage.setItem('weather_city', '101301601'); // 湛江城市代码
+    localStorage.setItem('default_city', '101301601');
+  } else {
+    localStorage.setItem('weather_city', weatherCity);
     localStorage.setItem('default_city', weatherCity);
   }
   
@@ -3533,8 +3554,8 @@ function loadAdminSettings() {
   
   if (siteTitleEl) siteTitleEl.value = localStorage.getItem('site_title') || '';
   if (themeEl) themeEl.value = localStorage.getItem('default_theme') || '';
-  if (annivNameEl) annivNameEl.value = localStorage.getItem('anniv_name') || '';
-  if (annivDateEl) annivDateEl.value = localStorage.getItem('anniv_date') || '';
+  if (annivNameEl) annivNameEl.value = localStorage.getItem('anniversary_name') || '';
+  if (annivDateEl) annivDateEl.value = localStorage.getItem('anniversary_date') || '';
   if (weatherKeyEl) weatherKeyEl.value = localStorage.getItem('amap_key') || '';
   if (weatherCityEl) weatherCityEl.value = localStorage.getItem('weather_city') || '';
   if (musicUrlEl) musicUrlEl.value = localStorage.getItem('music_url') || '';
@@ -3554,19 +3575,18 @@ function saveSiteSettings() {
 function saveAnniversaryConfig() {
   const name = document.getElementById('adminAnnivName').value;
   const date = document.getElementById('adminAnnivDate').value;
-  localStorage.setItem('anniv_name', name);
-  localStorage.setItem('anniv_date', date);
+  localStorage.setItem('anniversary_name', name);
+  localStorage.setItem('anniversary_date', date);
   showToast('纪念日设置已保存，将在下一次访问时生效');
   setTimeout(() => autoSync(), 500);
 }
-
-function saveWeatherConfig() {
 
 function saveWeatherConfig() {
   const key = document.getElementById('adminWeatherKey').value;
   const city = document.getElementById('adminWeatherCity').value;
   localStorage.setItem('amap_key', key);
   localStorage.setItem('weather_city', city);
+  localStorage.setItem('default_city', city);
   showToast('天气设置已保存');
   setTimeout(() => autoSync(), 500);
 }
